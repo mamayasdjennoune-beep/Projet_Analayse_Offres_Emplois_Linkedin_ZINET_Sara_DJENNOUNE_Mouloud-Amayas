@@ -8,8 +8,17 @@ L’enjeu principal est double :
 
 Mettre en place un pipeline de données robuste et traçable dans Snowflake, basé sur l’architecture Bronze / Silver / Gold. 
 
-Fournir des analyses exploitables via SQL et Streamlit afin de mieux comprendre les dynamiques du marché de l’emploi : types de postes, niveaux de salaire, secteurs d’activité, tailles d’entreprises et compétences recherchées. 
+Fournir des analyses exploitables via SQL et Streamlit afin de mieux comprendre les dynamiques du marché de l’emploi :
+types de postes, niveaux de salaire, secteurs d’activité, tailles d’entreprises et compétences recherchées. 
 
 Ce rapport détaille pas à pas chaque étape, explique chaque script SQL, justifie les choix techniques, et revient en profondeur sur les problèmes rencontrés et leurs solutions. 
 
+Voici un exemple de création de table :
+
+```sql
+CREATE TABLE test (
+  id INT,
+  name STRING
+);
+```
  
