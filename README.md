@@ -1,17 +1,23 @@
-# Projet-Analyse-des-Offres-d-Emploi-LinkedIn-avec-Snowflake
-Analyse de bout en bout du marché de l’emploi LinkedIn à l’aide de Snowflake (architecture Bronze/Silver/Gold) et d’un tableau de bord interactif Streamlit.
-## 1. Introduction 
 
-Ce projet a pour objectif d’analyser le marché de l’emploi LinkedIn à partir de données hétérogènes (CSV et JSON) stockées dans un bucket S3 public. Il s’inscrit dans une démarche complète de Data Engineering, allant de l’ingestion brute des données jusqu’à leur visualisation à travers un dashboard interactif. 
+# I. Introduction 
+## I. 1 Contexte
+Avec l’essor des plateformes professionnelles comme LinkedIn, une grande quantité de données est générée quotidiennement autour du marché de l’emploi : offres d’emploi, compétences demandées, secteurs d’activité, types de contrats, salaires, etc.
+Ces données représentent une source stratégique majeure pour analyser les tendances du recrutement, comprendre les besoins des entreprises et anticiper l’évolution des compétences recherchées.  
 
-L’enjeu principal est double : 
+Dans ce projet, nous exploitons un jeu de données LinkedIn en mettant en œuvre une architecture data moderne de type Medallion (Bronze / Silver / Gold) sur Snowflake, couplée à une application de visualisation interactive développée avec Streamlit. 
 
-Mettre en place un pipeline de données robuste et traçable dans Snowflake, basé sur l’architecture Bronze / Silver / Gold. 
 
-Fournir des analyses exploitables via SQL et Streamlit afin de mieux comprendre les dynamiques du marché de l’emploi :
-types de postes, niveaux de salaire, secteurs d’activité, tailles d’entreprises et compétences recherchées. 
+## I. 2 Objectifs  
+Les objectifs principaux du projet sont :
 
-Ce rapport détaille pas à pas chaque étape, explique chaque script SQL, justifie les choix techniques, et revient en profondeur sur les problèmes rencontrés et leurs solutions. 
+* Mettre en place une architecture de données robuste et scalable
+* Nettoyer, normaliser et structurer des données hétérogènes
+* Construire des tables analytiques optimisées
+* Réaliser des requêtes d’analyse métiers
+* Développer un tableau de bord interactif pour la visualisation des résultats
+
+
+
 ## 2. Étapes Réalisées
 ### 2. 1. Création de la Base de Données
 
