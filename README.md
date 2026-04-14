@@ -55,16 +55,17 @@ CREATE  DATABASE IF NOT EXISTS  linkedin;
 * Crée une base de données dédiée au projet
 * Centralise toutes les couches (Bronze, Silver, Gold)
 * IF NOT EXISTS évite les erreurs lors des relances du script
-### 2.2. Création du schéma Bronze 
-text exp
-
-
+  ## II 2.2. Création du schéma Bronze 
 ```sql
 -- Create Schema BRONZE
 CREATE SCHEMA IF NOT EXISTS linkedin.BRONZE;
 
 ```
-### 2.3. Configuration du Stage Externe
+Rôle du schéma Bronze :
+*  Stockage des données brutes
+* Aucune transformation métier
+* Reproductibilité et auditabilité des données sources
+### II.3. Configuration du Stage Externe
 
 un stage Snowflake est configuré pour pointer vers un bucket S3 public. Ce stage joue le rôle d’un connecteur externe permettant à Snowflake d’accéder directement aux fichiers CSV et JSON stockés dans le cloud. Cette étape prépare donc l’ingestion des données provenant de LinkedIn.
 ```sql
