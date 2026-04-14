@@ -65,7 +65,7 @@ Rôle du schéma Bronze :
 *  Stockage des données brutes
 * Aucune transformation métier
 * Reproductibilité et auditabilité des données sources
-### II.3. Configuration du Stage Externe
+## II.3. Configuration du Stage Externe
 
 un stage Snowflake est configuré pour pointer vers un bucket S3 public. Ce stage joue le rôle d’un connecteur externe permettant à Snowflake d’accéder directement aux fichiers CSV et JSON stockés dans le cloud. Cette étape prépare donc l’ingestion des données provenant de LinkedIn.
 ```sql
@@ -74,7 +74,11 @@ CREATE OR REPLACE STAGE LINKEDIN.BRONZE.linkedin_stage
 URL = 's3://snowflake-lab-bucket/';
 
 ```
-### 2.4 Création des tables et chargement des données
+* Le stage Snowflake permet de faire le lien avec un stockage externe (S3)
+* Centralise tous les fichiers sources
+* Facilite les commandes COPY INTO
+  
+## 2.4 Création des tables dans le shéma Bronze et chargement des données
 Pour chaque type de fichier (job postings, benefits, skills, employee counts…), une table est créée dans la couche BRONZE avec toutes les colonnes en STRING. Ce choix volontaire suit la philosophie de la couche BRONZE : stocker la donnée telle qu’elle existe, sans transformation, sans typage, sans prise de décision métier. Cela garantit une ingestion fiable, même si les fichiers contiennent des irrégularités.
 
 
