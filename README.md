@@ -30,7 +30,19 @@ job_postings.csv  | Offres d’emploi (poste, salaire, localisation, type de con
 |company_industries.json	               |  Secteurs des entreprises |
 |company_specialities.json	               | Spécialités des entreprises |
 
+Ces données sont hétérogènes (CSV + JSON), avec des formats variables et parfois bruités.
+## I. 4. Architecture Medallion
+L’architecture Medallion se compose de trois couches :
 
+* `Bronze` : données brutes, sans transformation
+* `Silver` : données nettoyées, typées et normalisées
+* `Gold` : données enrichies et prêtes pour l’analyse métier
+
+Cette approche permet :
+
+* une meilleure traçabilité,
+* une séparation claire des responsabilités,
+* une optimisation des performances analytiques.
 
 ## 2. Étapes Réalisées
 ### 2. 1. Création de la Base de Données
