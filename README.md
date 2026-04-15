@@ -306,9 +306,279 @@ select * from LINKEDIN.BRONZE.COMPANY_INDUSTRIES;
 
 ```
 ## II. 5.	Création des tables Siver
-	(Explication détaillée du code pour chaque table)
+* Table JOB_POSTINGS
+	```sql
+	-- Create table JOB_POSTINGS
+CREATE OR REPLACE TABLE LINKEDIN.SILVER.JOB_POSTINGS AS
+SELECT
+    job_id::BIGINT AS job_id,
+
+    NULLIF(TRIM(company_name), '') AS company_name,
+    NULLIF(TRIM(title), '') AS title,
+    description AS description,
+
+    TRY_TO_NUMBER(NULLIF(TRIM(max_salary), '')) AS max_salary,
+    TRY_TO_NUMBER(NULLIF(TRIM(med_salary), '')) AS med_salary,
+    TRY_TO_NUMBER(NULLIF(TRIM(min_salary), '')) AS min_salary,
+
+    /* PAY PERIOD normalisé FR/EN */
+    CASE
+        WHEN LOWER(TRIM(pay_period)) IN ('per year','par an','annuel') THEN 'yearly'
+        WHEN LOWER(TRIM(pay_period)) IN ('per month','par mois','mensuel') THEN 'monthly'
+        WHEN LOWER(TRIM(pay_period)) IN ('per week','par semaine','hebdomadaire') THEN 'weekly'
+        WHEN LOWER(TRIM(pay_period)) IN ('per day','par jour','journalier') THEN 'daily'
+        WHEN LOWER(TRIM(pay_period)) IN ('per hour','par heure','horaire') THEN 'hourly'
+        ELSE NULLIF(TRIM(pay_period), '')
+    END AS pay_period,
+
+    /* formatted_work_type normalisé */
+    CASE
+        WHEN LOWER(TRIM(formatted_work_type)) IN ('full-time','temps plein') THEN 'Full-time'
+        WHEN LOWER(TRIM(formatted_work_type)) IN ('part-time','temps partiel') THEN 'Part-time'
+        WHEN LOWER(TRIM(formatted_work_type)) IN ('contract','contrat') THEN 'Contract'
+        WHEN LOWER(TRIM(formatted_work_type)) IN ('internship','stage') THEN 'Internship'
+        WHEN LOWER(TRIM(formatted_work_type)) IN ('temporary','intérim','temporaire') THEN 'Temporary'
+        WHEN LOWER(TRIM(formatted_work_type)) IN ('apprenticeship','apprentissage') THEN 'Apprenticeship'
+        ELSE NULLIF(TRIM(formatted_work_type), '')
+    END AS formatted_work_type,
+
+    NULLIF(TRIM(location), '') AS location,
+
+    TRY_TO_NUMBER(NULLIF(TRIM(applies), '')) AS applies,
+
+    /* original_listed_time — timestamps en millisecondes */
+    CASE
+        WHEN TRY_TO_NUMBER(original_listed_time) > 100000000000 THEN 
+            TO_TIMESTAMP_NTZ(TRY_TO_NUMBER(original_listed_time) / 1000)
+        ELSE 
+            TO_TIMESTAMP_NTZ(TRY_TO_NUMBER(original_listed_time))
+    END AS original_listed_time,
+
+    /* remote_allowed — version robuste (booléen, entier, texte, variant) */
+    CASE
+        WHEN TRY_TO_BOOLEAN(remote_allowed) IS NOT NULL
+            THEN TRY_TO_BOOLEAN(remote_allowed)
+
+        WHEN TRY_TO_NUMBER(remote_allowed) = 1 THEN TRUE
+        WHEN TRY_TO_NUMBER(remote_allowed) = 0 THEN FALSE
+
+        WHEN LOWER(TO_VARCHAR(remote_allowed)) IN ('true','yes','vrai','oui') THEN TRUE
+        WHEN LOWER(TO_VARCHAR(remote_allowed)) IN ('false','no','faux','non') THEN FALSE
+
+        ELSE NULL
+    END AS remote_allowed,
+
+    TRY_TO_NUMBER(NULLIF(TRIM(views), '')) AS views,
+
+    job_posting_url,
+    application_url,
+    application_type,
+
+    /* expiry */
+    CASE
+        WHEN TRY_TO_NUMBER(expiry) > 100000000000 THEN 
+            TO_TIMESTAMP_NTZ(TRY_TO_NUMBER(expiry) / 1000)
+        ELSE 
+            TO_TIMESTAMP_NTZ(TRY_TO_NUMBER(expiry))
+    END AS expiry,
+
+    /* closed_time */
+    CASE
+        WHEN TRY_TO_NUMBER(closed_time) > 100000000000 THEN 
+            TO_TIMESTAMP_NTZ(TRY_TO_NUMBER(closed_time) / 1000)
+        ELSE 
+            TO_TIMESTAMP_NTZ(TRY_TO_NUMBER(closed_time))
+    END AS closed_time,
+
+    /* formatted_experience_level normalisé */
+    CASE
+        WHEN LOWER(TRIM(formatted_experience_level)) IN ('internship','stage') THEN 'Internship'
+        WHEN LOWER(TRIM(formatted_experience_level)) IN ('entry level','débutant','junior') THEN 'Entry level'
+        WHEN LOWER(TRIM(formatted_experience_level)) IN ('associate','confirmé') THEN 'Associate'
+        WHEN LOWER(TRIM(formatted_experience_level)) IN ('mid-senior level','expérimenté') THEN 'Mid-Senior level'
+        WHEN LOWER(TRIM(formatted_experience_level)) IN ('director','directeur') THEN 'Director'
+        WHEN LOWER(TRIM(formatted_experience_level)) IN ('executive','cadre dirigeant') THEN 'Executive'
+        ELSE NULLIF(TRIM(formatted_experience_level), '')
+    END AS formatted_experience_level,
+
+    skills_desc,
+
+    /* listed_time */
+    CASE
+        WHEN TRY_TO_NUMBER(listed_time) > 100000000000 THEN 
+            TO_TIMESTAMP_NTZ(TRY_TO_NUMBER(listed_time) / 1000)
+        ELSE 
+            TO_TIMESTAMP_NTZ(TRY_TO_NUMBER(listed_time))
+    END AS listed_time,
+
+    posting_domain,
+
+    /* sponsored — version robuste */
+    CASE
+        WHEN TRY_TO_BOOLEAN(sponsored) IS NOT NULL
+            THEN TRY_TO_BOOLEAN(sponsored)
+
+        WHEN TRY_TO_NUMBER(sponsored) = 1 THEN TRUE
+        WHEN TRY_TO_NUMBER(sponsored) = 0 THEN FALSE
+
+        WHEN LOWER(TO_VARCHAR(sponsored)) IN ('true','yes','vrai','oui') THEN TRUE
+        WHEN LOWER(TO_VARCHAR(sponsored)) IN ('false','no','faux','non') THEN FALSE
+
+        ELSE NULL
+    END AS sponsored,
+
+    /* work_type normalisé */
+    CASE
+        WHEN LOWER(TRIM(work_type)) IN ('full-time','temps plein') THEN 'Full-time'
+        WHEN LOWER(TRIM(work_type)) IN ('part-time','temps partiel') THEN 'Part-time'
+        WHEN LOWER(TRIM(work_type)) IN ('contract','contrat') THEN 'Contract'
+        WHEN LOWER(TRIM(work_type)) IN ('internship','stage') THEN 'Internship'
+        WHEN LOWER(TRIM(work_type)) IN ('temporary','intérim','temporaire') THEN 'Temporary'
+        ELSE NULLIF(TRIM(work_type), '')
+    END AS work_type,
+
+    currency,
+    compensation_type
+
+FROM LINKEDIN.BRONZE.JOB_POSTINGS;
+
+-- Check table content
+SELECT * FROM LINKEDIN.SILVER.JOB_POSTINGS;
+
+	```
+ * Table `BENEFITS`
+	```sql
+	-- Create table BENEFITS (SILVER)
+CREATE OR REPLACE TABLE LINKEDIN.SILVER.BENEFITS AS
+SELECT
+    job_id::BIGINT AS job_id,
+
+    -- Normalisation FR/EN des booléens
+    CASE
+        WHEN LOWER(TRIM(inferred)) IN ('true','1','yes','vrai','oui') THEN TRUE
+        WHEN LOWER(TRIM(inferred)) IN ('false','0','no','faux','non') THEN FALSE
+        ELSE NULL
+    END AS inferred,
+
+    -- Nettoyage du type (pas de traduction automatique possible)
+    NULLIF(TRIM(type), '') AS type
+
+FROM LINKEDIN.BRONZE.BENEFITS;
+
+-- 
+SELECT * FROM LINKEDIN.SILVER.BENEFITS;
+
+
+	```
+ * Table `COMPANIES`
+	```sql
+	--Create table COMPANIES
+CREATE OR REPLACE TABLE LINKEDIN.SILVER.COMPANIES AS
+SELECT
+    f.value:company_id::BIGINT  AS company_id,
+    NULLIF(TRIM(f.value:name::STRING), '') AS name,
+    f.value:description::STRING AS description,
+    f.value:company_size::INT   AS company_size,
+    f.value:state::STRING       AS state,
+    f.value:country::STRING     AS country,
+    f.value:city::STRING        AS city,
+    f.value:zip_code::STRING    AS zip_code,
+    f.value:address::STRING     AS address,
+    f.value:url::STRING         AS url
+FROM LINKEDIN.BRONZE.COMPANIES,
+     LATERAL FLATTEN(input => data) f;
+--Check table COMPANIES
+select* from LINKEDIN.SILVER.COMPANIES;
+
+	```
+ * Table `EMPLOYEE_COUNTS`
+	```sql
+	-- Create table EMPLOYEE_COUNTS (SILVER)
+CREATE OR REPLACE TABLE LINKEDIN.SILVER.EMPLOYEE_COUNTS AS
+SELECT
+    TRY_TO_NUMBER(company_id) AS company_id,
+
+    TRY_TO_NUMBER(NULLIF(TRIM(employee_count), '')) AS employee_count,
+    TRY_TO_NUMBER(NULLIF(TRIM(follower_count), '')) AS follower_count,
+
+    -- Gestion seconds vs milliseconds
+    CASE
+        WHEN TRY_TO_NUMBER(time_recorded) IS NULL THEN NULL
+        WHEN TRY_TO_NUMBER(time_recorded) > 100000000000  -- ~ 10^11 → probablement millisecondes
+            THEN TO_TIMESTAMP_NTZ(TRY_TO_NUMBER(time_recorded) / 1000)
+        ELSE
+            TO_TIMESTAMP_NTZ(TRY_TO_NUMBER(time_recorded)) -- secondes
+    END AS time_recorded
+
+FROM LINKEDIN.BRONZE.EMPLOYEE_COUNTS;
+
+-- Check table content
+SELECT * FROM LINKEDIN.SILVER.EMPLOYEE_COUNTS;
+
+
+	```
+ * Table `JOB_SKILLS`
+	```sql
+	-- Create table JOB_SKILLS
+CREATE OR REPLACE TABLE LINKEDIN.SILVER.JOB_SKILLS AS
+SELECT
+    TRY_TO_NUMBER(job_id) AS job_id,
+    NULLIF(TRIM(skill_abr), '') AS skill_abr
+FROM LINKEDIN.BRONZE.JOB_SKILLS;
+
+-- Check table content
+SELECT * FROM LINKEDIN.SILVER.JOB_SKILLS;
+	```
+ * Table `JOB_INDUSTRIES`
+	```sql
+	--Create table JOB_INDUSTRIES 
+CREATE OR REPLACE TABLE LINKEDIN.SILVER.JOB_INDUSTRIES AS
+SELECT
+    f.value:job_id::BIGINT        AS job_id,
+    f.value:industry_id::INT     AS industry_id
+FROM LINKEDIN.BRONZE.JOB_INDUSTRIES,
+     LATERAL FLATTEN(input => data) f;
+--Check table JOB_INDUSTRIES 
+select* from LINKEDIN.SILVER.JOB_INDUSTRIES;
+--Create table COMPANY_INDUSTRIES
+CREATE OR REPLACE TABLE LINKEDIN.SILVER.COMPANY_INDUSTRIES AS
+SELECT
+    f.value:company_id::BIGINT AS company_id,
+    NULLIF(TRIM(f.value:industry::STRING), '') AS industry
+FROM LINKEDIN.BRONZE.COMPANY_INDUSTRIES,
+     LATERAL FLATTEN(input => data) f;
+     
+-- Check table content
+select* from LINKEDIN.SILVER.COMPANY_INDUSTRIES;
+	```
+ * Table `COMPANY_SPECIALITIES`
+	```sql
+	--Create table COMPANY_SPECIALITIES
+CREATE OR REPLACE TABLE LINKEDIN.SILVER.COMPANY_SPECIALITIES AS
+SELECT
+    f.value:company_id::BIGINT AS company_id,
+    NULLIF(TRIM(f.value:speciality::STRING), '') AS speciality
+FROM LINKEDIN.BRONZE.COMPANY_SPECIALITIES,
+     LATERAL FLATTEN(input => data) f;
+     
+-- Check table content
+select* from LINKEDIN.SILVER.COMPANY_SPECIALITIES;
+
+	```
+
 ## II. 6. 	Création des tables Gold
-(Explication détaillée du code pour chaque table)
+ * Table
+	```sql
+	
+	```
+ * Table
+	```sql
+	
+	```
+ * Table
+	```sql
+	
+	```
 ## II. 7.	Requêtes d’analyse de données 
 (Explication détaillée du code pour chaque requêtes)
 ## II. .8	Application streamlit
