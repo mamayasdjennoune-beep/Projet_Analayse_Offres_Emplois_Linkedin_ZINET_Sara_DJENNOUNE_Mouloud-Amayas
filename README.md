@@ -305,7 +305,14 @@ FILE_FORMAT = (TYPE='JSON');
 select * from LINKEDIN.BRONZE.COMPANY_INDUSTRIES;
 
 ```
-## II. 5.	Création des tables Siver
+## II. 5.	Création des tables Silver
+```sql
+-- Create Schema SILVER
+CREATE SCHEMA IF NOT EXISTS LINKEDIN.SILVER;
+```
+La création du schéma `Silver` suis le même logique que le schéma `Bronze
+
+`
 * Table `JOB_POSTINGS`
 ```sql
 	-- Create table JOB_POSTINGS
@@ -446,6 +453,30 @@ FROM LINKEDIN.BRONZE.JOB_POSTINGS;
 SELECT * FROM LINKEDIN.SILVER.JOB_POSTINGS;
 
 ```
+- La table JOB_POSTINGS est créée dans la couche Silver avec l’instruction CREATE OR REPLACE TABLE.
+- Les données proviennent directement de LINKEDIN.BRONZE.JOB_POSTINGS via la clause FROM.
+- L’identifiant de l’offre est converti en numérique avec job_id::BIGINT.
+- Les champs texte sont nettoyés grâce à TRIM(company_name) et NULLIF(..., '').
+- Le titre du poste est également nettoyé avec NULLIF(TRIM(title), '').
+- Les salaires sont convertis en nombres avec TRY_TO_NUMBER(max_salary), med_salary et min_salary.
+- La fonction TRY_TO_NUMBER évite les erreurs de conversion.
+- La période de paiement est normalisée à l’aide d’un CASE WHEN sur pay_period.
+- Les valeurs françaises et anglaises sont regroupées sous des formats standards comme yearly ou monthly.
+- Le type de contrat est harmonisé avec un CASE WHEN appliqué à formatted_work_type.
+- Le champ work_type est normalisé selon la même logique.
+- La localisation est nettoyée avec NULLIF(TRIM(location), '').
+- Le nombre de candidatures est converti avec TRY_TO_NUMBER(applies).
+- Le nombre de vues est converti avec TRY_TO_NUMBER(views).
+- Les dates sont transformées avec TO_TIMESTAMP_NTZ.
+- Une condition CASE WHEN permet de distinguer les secondes des millisecondes.
+- Le champ remote_allowed est converti en booléen avec TRY_TO_BOOLEAN.
+- Les valeurs numériques et textuelles sont aussi prises en compte dans le CASE.
+- Le champ sponsored est normalisé selon la même logique booléenne.
+- Le niveau d’expérience est standardisé grâce à un CASE WHEN sur formatted_experience_level.
+- Les colonnes skills_desc, currency et compensation_type sont conservées sans transformation.
+- La table Silver est ainsi reconstruite à partir de la table Bronze.
+- La requête SELECT * FROM LINKEDIN.SILVER.JOB_POSTINGS permet de vérifier le résultat final.
+
  * Table `BENEFITS`
 ```sql
 	-- Create table BENEFITS (SILVER)
