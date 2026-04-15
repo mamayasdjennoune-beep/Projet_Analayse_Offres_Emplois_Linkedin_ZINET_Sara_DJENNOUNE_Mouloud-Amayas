@@ -564,7 +564,7 @@ FROM LINKEDIN.BRONZE.COMPANY_SPECIALITIES,
 -- Check table content
 select* from LINKEDIN.SILVER.COMPANY_SPECIALITIES;
 
-```
+ ```
 
 ## II. 6. 	Création des tables Gold
  * Table
