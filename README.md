@@ -501,6 +501,22 @@ SELECT * FROM LINKEDIN.SILVER.BENEFITS;
 
 
 ```
+- La table BENEFITS est créée dans la couche Silver avec CREATE OR REPLACE TABLE.
+- Elle est construite à partir de la table LINKEDIN.BRONZE.BENEFITS via la clause FROM.
+- L’identifiant de l’offre est converti en numérique avec job_id::BIGINT.
+- Cette conversion permet d’utiliser job_id comme clé de jointure.
+- Le champ inferred est normalisé à l’aide d’un CASE WHEN.
+- La fonction LOWER(TRIM(inferred)) permet d’unifier les valeurs textuelles.
+- Les valeurs comme 'true', '1', 'yes', 'vrai' et 'oui' sont converties en TRUE.
+- Les valeurs comme 'false', '0', 'no', 'faux' et 'non' sont converties en FALSE.
+- Les valeurs non reconnues sont remplacées par NULL.
+- Cette logique permet de gérer les formats français et anglais.
+- Le champ type est nettoyé avec TRIM(type).
+- La fonction NULLIF(..., '') transforme les chaînes vides en valeurs nulles.
+- Aucune traduction automatique n’est appliquée au champ type.
+- Les données sont ainsi standardisées sans perte d’information.
+- La table Silver est entièrement reconstruite à partir de la couche Bronze.
+- La requête SELECT * FROM LINKEDIN.SILVER.BENEFITS permet de vérifier le résultat final.
  * Table `COMPANIES`
 ```sql
 	--Create table COMPANIES
