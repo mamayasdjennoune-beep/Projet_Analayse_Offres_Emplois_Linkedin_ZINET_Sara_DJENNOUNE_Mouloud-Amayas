@@ -87,8 +87,176 @@ La commande COPY INTO est ensuite utilisée pour importer les données depuis le
 
 Les fichiers JSON sont eux aussi ingérés dans des tables BRONZE, mais contrairement aux CSV, ils sont stockés dans une unique colonne VARIANT. Cela permet de conserver la structure JSON originale, avec ses attributs imbriqués. Une conséquence directe est que chaque fichier JSON contenant un tableau est ingéré sous forme d’une seule ligne, ce qui nécessitera une correction en SILVER.
 
+ ```sql
+-- Create `Table JOB_POSTINGS`
+CREATE TABLE IF NOT EXISTS LINKEDIN.BRONZE.JOB_POSTINGS (
+    job_id STRING,
+    company_name STRING,
+    title STRING,
+    description STRING,
+    max_salary STRING,
+    med_salary STRING,
+    min_salary STRING,
+    pay_period STRING,
+    formatted_work_type STRING,
+    location STRING,
+    applies STRING,
+    original_listed_time STRING,
+    remote_allowed STRING,
+    views STRING,
+    job_posting_url STRING,
+    application_url STRING,
+    application_type STRING,
+    expiry STRING,
+    closed_time STRING,
+    formatted_experience_level STRING,
+    skills_desc STRING,
+    listed_time STRING,
+    posting_domain STRING,
+    sponsored STRING,
+    work_type STRING,
+    currency STRING,
+    compensation_type STRING
+);
+-- Copy data into JOB_POSTINGS
+COPY INTO LINKEDIN.BRONZE.JOB_POSTINGS
+FROM @LINKEDIN.BRONZE.LINKEDIN_STAGE/job_postings.csv
+FILE_FORMAT = (
+    TYPE = 'CSV'
+    SKIP_HEADER = 1
+    FIELD_OPTIONALLY_ENCLOSED_BY = '"'
+);
+-- Check table content
+SELECT * FROM LINKEDIN.BRONZE.JOB_POSTINGS;
 
-*  Table Benefits :
+```
+*  Table `Benefits` :
+   ```sql
+   -- Create table BENEFITS
+CREATE TABLE IF NOT EXISTS LINKEDIN.BRONZE.BENEFITS (
+    job_id STRING,
+    inferred STRING,
+    type STRING
+);
+
+-- Copy data into BENEFITS
+COPY INTO LINKEDIN.BRONZE.BENEFITS
+FROM @LINKEDIN.BRONZE.LINKEDIN_STAGE/benefits.csv
+FILE_FORMAT = (
+    TYPE = 'CSV'
+    SKIP_HEADER = 1
+    FIELD_OPTIONALLY_ENCLOSED_BY = '"'
+);
+
+-- Check table content
+SELECT * FROM LINKEDIN.BRONZE.BENEFITS;
+```
+* Table `EMPLOYEE_COUNTS` 
+```sql
+-- Create table EMPLOYEE_COUNTS
+CREATE TABLE IF NOT EXISTS LINKEDIN.BRONZE.EMPLOYEE_COUNTS (
+    company_id STRING,
+    employee_count STRING,
+    follower_count STRING,
+    time_recorded STRING
+);
+
+-- Copy data into EMPLOYEE_COUNTS
+COPY INTO LINKEDIN.BRONZE.EMPLOYEE_COUNTS
+FROM @LINKEDIN.BRONZE.LINKEDIN_STAGE/employee_counts.csv
+FILE_FORMAT = (
+    TYPE = 'CSV'
+    SKIP_HEADER = 1
+    FIELD_OPTIONALLY_ENCLOSED_BY = '"'
+);
+
+-- Check table content
+SELECT * FROM LINKEDIN.BRONZE.EMPLOYEE_COUNTS;
+```
+* Table `JOB_SKILLS`
+  ```sql
+   -- Create table JOB_SKILLS
+CREATE TABLE IF NOT EXISTS LINKEDIN.BRONZE.JOB_SKILLS (
+    job_id STRING,
+    skill_abr STRING
+);
+
+-- Copy data into JOB_SKILLS
+COPY INTO LINKEDIN.BRONZE.JOB_SKILLS
+FROM @LINKEDIN.BRONZE.LINKEDIN_STAGE/job_skills.csv
+FILE_FORMAT = (
+    TYPE = 'CSV'
+    SKIP_HEADER = 1
+    FIELD_OPTIONALLY_ENCLOSED_BY = '"'
+);
+
+-- Check table content
+SELECT * FROM LINKEDIN.BRONZE.JOB_SKILLS;
+
+```
+* Table `COMPANIES`
+  ```sql
+   -- Create table COMPANIES
+CREATE TABLE IF NOT EXISTS LINKEDIN.BRONZE.COMPANIES (
+    data VARIANT
+);
+
+-- Copy data into COMPANIES
+COPY INTO LINKEDIN.BRONZE.COMPANIES
+FROM @LINKEDIN.BRONZE.LINKEDIN_STAGE/companies.json
+FILE_FORMAT = (
+    TYPE = 'JSON'
+);
+
+-- Check table content
+SELECT * FROM LINKEDIN.BRONZE.COMPANIES;
+
+```
+* Table `JOB_INDUSTRIES`
+  ```sql
+   -- Create table JOB_INDUSTRIES
+CREATE TABLE IF NOT EXISTS LINKEDIN.BRONZE.JOB_INDUSTRIES (
+    data VARIANT
+);
+
+-- Copy data into JOB_INDUSTRIES
+COPY INTO LINKEDIN.BRONZE.JOB_INDUSTRIES
+FROM @LINKEDIN.BRONZE.LINKEDIN_STAGE/job_industries.json
+FILE_FORMAT = (
+    TYPE = 'JSON'
+);
+
+-- Check table content
+SELECT * FROM LINKEDIN.BRONZE.JOB_INDUSTRIES;
+
+```
+* Table `COMPANY_SPECIALITIES`
+  ```sql
+   -- Create table COMPANY_SPECIALITIES
+CREATE TABLE IF NOT EXISTS LINKEDIN.BRONZE.COMPANY_SPECIALITIES (data VARIANT);
+-- Copy the data into table
+COPY INTO LINKEDIN.BRONZE.COMPANY_SPECIALITIES
+FROM @linkedin_stage/company_specialities.json
+FILE_FORMAT = (TYPE='JSON');
+
+-- Check table content
+select * from LINKEDIN.BRONZE.COMPANY_SPECIALITIES;
+
+```
+* Table `COMPANY_INDUSTRIES`
+  ```sql
+   -- Create table COMPANY_INDUSTRIES
+CREATE TABLE IF NOT EXISTS LINKEDIN.BRONZE.COMPANY_INDUSTRIES (data VARIANT);
+
+-- Copy the data into table
+COPY INTO LINKEDIN.BRONZE.COMPANY_INDUSTRIES
+FROM @linkedin_stage/company_industries.json
+FILE_FORMAT = (TYPE='JSON');
+
+-- Check table content
+select * from LINKEDIN.BRONZE.COMPANY_INDUSTRIES;
+
+```
 
 
  
