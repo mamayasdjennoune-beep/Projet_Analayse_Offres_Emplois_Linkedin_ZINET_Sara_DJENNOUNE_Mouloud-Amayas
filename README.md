@@ -155,7 +155,7 @@ Avantages de cette approche
 * Compatibilité avec les fichiers générés automatiquement
 * Réduction des erreurs liées au parsing des chaînes de caractères
 
-  
+  un rêquete SELECT est ajoutée à la fin afin de voir un apperçu de la table et de bien de vérifier que les données sont corrrectement chrgées.
   La même la logique est appliquée pour les autre tables dont le fichier source est un fichier csv
 
   
