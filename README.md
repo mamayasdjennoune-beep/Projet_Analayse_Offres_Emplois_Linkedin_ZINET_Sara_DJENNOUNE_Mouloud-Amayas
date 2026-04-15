@@ -52,19 +52,14 @@ Cette approche permet :
 CREATE  DATABASE IF NOT EXISTS  linkedin;
 
 ```
-* Crée une base de données dédiée au projet
-* Centralise toutes les couches (Bronze, Silver, Gold)
-* IF NOT EXISTS évite les erreurs lors des relances du script
+La création d’une base de données dédiée au projet permet de centraliser l’ensemble des couches de l’architecture Medallion (Bronze, Silver et Gold), tandis que l’utilisation de la clause IF NOT EXISTS évite les erreurs lors des relances successives du script.
   ## II 2.2. Création du schéma Bronze 
 ```sql
 -- Create Schema BRONZE
 CREATE SCHEMA IF NOT EXISTS linkedin.BRONZE;
 
 ```
-Rôle du schéma Bronze :
-*  Stockage des données brutes
-* Aucune transformation métier
-* Reproductibilité et auditabilité des données sources
+La couche Bronze a pour rôle de stocker les données brutes telles qu’elles sont reçues, sans appliquer de transformation métier, afin de garantir la traçabilité et l’intégrité des données sources tout au long du pipeline de traitement.
 ## II.3. Configuration du Stage Externe
 
 un stage Snowflake est configuré pour pointer vers un bucket S3 public. Ce stage joue le rôle d’un connecteur externe permettant à Snowflake d’accéder directement aux fichiers CSV et JSON stockés dans le cloud. Cette étape prépare donc l’ingestion des données provenant de LinkedIn.
@@ -310,7 +305,7 @@ select * from LINKEDIN.BRONZE.COMPANY_INDUSTRIES;
 -- Create Schema SILVER
 CREATE SCHEMA IF NOT EXISTS LINKEDIN.SILVER;
 ```
-La création du schéma `Silver` suis le même logique que le schéma `Bronze`
+La création du schéma `Silver` suis le même logique que le schéma `Bronze, il a pour rôle de nettoyer, typer et normaliser les données issues de la couche Bronze en appliquant des règles de qualité et de cohérence, afin de préparer des données fiables et structurées pour l’analyse.
 
 * Table `JOB_POSTINGS`
 ```sql
@@ -710,7 +705,7 @@ select* from LINKEDIN.SILVER.COMPANY_SPECIALITIES;
 -- Create schema GOLD
 CREATE SCHEMA IF NOT EXISTS LINKEDIN.GOLD;
 ```
-* La création du shéma `Gold` suis la même logique que les schémas `Bronze` et `Silver`
+* La création du schéma `Gold` suis la même logique que les schémas `Bronze` et `Silver`, il a pour rôle de consolider et d’enrichir les données nettoyées afin de produire des tables analytiques optimisées, directement exploitables pour les analyses métier et les outils de visualisation.
  * Table `JOB_POSTING`
 ```sql
 	-- Create table JOB_POSTINGS (GOLD)
