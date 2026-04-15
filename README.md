@@ -240,6 +240,25 @@ FILE_FORMAT = (
 SELECT * FROM LINKEDIN.BRONZE.COMPANIES;
 
 ```
+Cette instruction permet de créer la table COMPANIES dans le schéma LINKEDIN.BRONZE dont le fichier source est sous format `JSON`.
+
+Choix du type VARIANT
+La colonne unique data est définie avec le type VARIANT, qui est un type spécifique à Snowflake permettant de stocker des données semi‑structurées telles que `JSON`.
+
+
+Dans le cadre de ce projet, les données sources sont fournies au format JSON, souvent imbriqué et non strictement tabulaire.
+Objectifs de ce choix :
+
+* Conserver l’intégralité de la structure originale du fichier JSON
+* Éviter toute perte d’information
+* Repousser l’interprétation du schéma à la couche Silver, où les données seront structurées
+
+Ce choix est cohérent avec la philosophie de la couche Bronze, qui vise à stocker les données sans transformation, telles qu’elles sont reçues.
+
+La commande La commande `COPY INTO` suis le méme raisonement que pour les fichier csv, la seule est différence est les format spécifié est le format : `JSON` 
+
+ La même la logique est appliquée pour les autre tables dont le fichier source est un fichier JSON
+
 * Table `JOB_INDUSTRIES
   `
 ```sql
