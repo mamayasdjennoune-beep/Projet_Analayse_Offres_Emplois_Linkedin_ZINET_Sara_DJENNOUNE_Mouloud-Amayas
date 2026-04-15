@@ -130,6 +130,35 @@ FILE_FORMAT = (
 SELECT * FROM LINKEDIN.BRONZE.JOB_POSTINGS;
 
 ```
+Cette instruction permet de créer la table `JOB_POSTINGS`  dans le schéma LINKEDIN.BRONZE avec toutes les colonnes présentes dans le fihcier csv. Ainsi, toutes les colonnes sont volontairement définies avec le type STRING, même lorsque les données représentent des nombres, des dates ou des booléens.
+
+La commande `COPY INTO` permet de charger les données du fichier job_postings.csv stocké dans le stage Snowflake vers la table JOB_POSTINGS.  
+
+Fonctionnement :
+
+* `@LINKEDIN.BRONZE.LINKEDIN_STAGE` : référence au stage externe (stockage S3)
+* `bjob_postings.csv` : fichier source contenant les offres d’emploi LinkedIn
+* `bCOPY INTO` : méthode optimisée Snowflake pour le chargement massif de données
+
+Paramètres du format CSV
+
+* `TYPE = 'CSV'` : Indique le format du fichier source
+ 
+* `SKIP_HEADER` = 1 : Ignore la première ligne contenant les noms des colonnes
+
+* `FIELD_OPTIONALLY_ENCLOSED_BY` = '"' : Indispensable pour les fichiers CSV où les descriptions de postes contiennent des virgules. Cela indique à Snowflake que tout ce qui est entre guillemets appartient à la même colonne.
+
+
+Avantages de cette approche
+
+* Chargement rapide et fiable
+* Compatibilité avec les fichiers générés automatiquement
+* Réduction des erreurs liées au parsing des chaînes de caractères
+
+  
+  La même la logique est appliquée pour les autre tables dont le fichier source est un fichier csv
+
+  
 *  Table `Benefits` :
 ```sql
 -- Create table BENEFITS
