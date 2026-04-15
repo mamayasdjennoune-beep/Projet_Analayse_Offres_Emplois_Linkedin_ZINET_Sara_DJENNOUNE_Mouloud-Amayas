@@ -86,9 +86,9 @@ La commande COPY INTO est ensuite utilisée pour importer les données depuis le
 
 
 Les fichiers JSON sont eux aussi ingérés dans des tables BRONZE, mais contrairement aux CSV, ils sont stockés dans une unique colonne VARIANT. Cela permet de conserver la structure JSON originale, avec ses attributs imbriqués. Une conséquence directe est que chaque fichier JSON contenant un tableau est ingéré sous forme d’une seule ligne, ce qui nécessitera une correction en SILVER.
-
+*  Table `Table JOB_POSTINGS` :
  ```sql
--- Create `Table JOB_POSTINGS`
+-- Create Table JOB_POSTINGS
 CREATE TABLE IF NOT EXISTS LINKEDIN.BRONZE.JOB_POSTINGS (
     job_id STRING,
     company_name STRING,
