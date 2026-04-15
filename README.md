@@ -581,7 +581,21 @@ FROM LINKEDIN.BRONZE.EMPLOYEE_COUNTS;
 -- Check table content
 SELECT * FROM LINKEDIN.SILVER.EMPLOYEE_COUNTS;
 
-
+- La table EMPLOYEE_COUNTS est créée dans la couche Silver avec CREATE OR REPLACE TABLE.
+- Les données proviennent de la table LINKEDIN.BRONZE.EMPLOYEE_COUNTS.
+- L’identifiant de l’entreprise est converti en numérique avec TRY_TO_NUMBER(company_id).
+- Cette conversion permet d’utiliser company_id pour les jointures.
+- Le champ employee_count est nettoyé avec TRIM et NULLIF.
+- Il est converti en nombre avec TRY_TO_NUMBER.
+- Le champ follower_count suit la même logique de conversion.
+- La fonction TRY_TO_NUMBER évite les erreurs de typage.
+- Le champ time_recorded est converti en timestamp avec TO_TIMESTAMP_NTZ.
+- Une condition CASE WHEN gère les formats en secondes et en millisecondes.
+- Le seuil > 100000000000 permet d’identifier les millisecondes.
+- Les valeurs nulles sont explicitement gérées dans le CASE.
+- Cette logique garantit une cohérence temporelle des données.
+- La table Silver est entièrement reconstruite à partir de la couche Bronze.
+- La requête SELECT * FROM LINKEDIN.SILVER.EMPLOYEE_COUNTS permet de vérifier le résultat.
 ```
  * Table `JOB_SKILLS`
 ```sql
@@ -595,6 +609,17 @@ FROM LINKEDIN.BRONZE.JOB_SKILLS;
 -- Check table content
 SELECT * FROM LINKEDIN.SILVER.JOB_SKILLS;
 ```
+- La table JOB_SKILLS est créée dans la couche Silver avec CREATE OR REPLACE TABLE.
+- Les données proviennent de la table LINKEDIN.BRONZE.JOB_SKILLS.
+- L’identifiant de l’offre est converti en numérique avec TRY_TO_NUMBER(job_id).
+- Cette conversion permet d’utiliser job_id pour les jointures analytiques.
+- Le champ skill_abr est nettoyé avec TRIM(skill_abr).
+- La fonction NULLIF(..., '') remplace les chaînes vides par NULL.
+- Aucune transformation métier complexe n’est appliquée à ce champ.
+- Les compétences sont conservées sous forme abrégée.
+- La table Silver est reconstruite à partir de la couche Bronze.
+- Elle est prête à être utilisée dans la couche Gold.
+- La requête SELECT * FROM LINKEDIN.SILVER.JOB_SKILLS permet de vérifier le contenu
  * Table `JOB_INDUSTRIES`
 ```sql
 	--Create table JOB_INDUSTRIES 
@@ -607,6 +632,21 @@ FROM LINKEDIN.BRONZE.JOB_INDUSTRIES,
 --Check table JOB_INDUSTRIES 
 select* from LINKEDIN.SILVER.JOB_INDUSTRIES;
 ```
+- La table JOB_INDUSTRIES est créée dans la couche Silver avec CREATE OR REPLACE TABLE.
+- Les données proviennent de la table LINKEDIN.BRONZE.JOB_INDUSTRIES.
+- La fonction LATERAL FLATTEN(input => data) est utilisée pour parcourir le fichier JSON.
+- Chaque élément du tableau JSON est transformé en une ligne.
+- L’identifiant de l’offre est extrait avec f.value:job_id::BIGINT.
+- Ce champ est converti en type numérique.
+- L’identifiant du secteur est extrait avec f.value:industry_id::INT.
+- Ce champ est également typé en entier.
+- Aucune transformation métier n’est appliquée à ces valeurs.
+- La table permet d’associer chaque offre à un secteur d’activité.
+- Elle facilite les analyses par industrie dans les couches ultérieures.
+- Les données sont structurées à partir de données semi‑structurées.
+- La table Silver est entièrement reconstruite depuis la couche Bronze.
+- La requête SELECT * FROM LINKEDIN.SILVER.JOB_INDUSTRIES permet de vérifier le résultat.
+
 * Table `COMPANY_INDUSTRIES`
 ```sql
 --Create table COMPANY_INDUSTRIES
@@ -620,6 +660,22 @@ FROM LINKEDIN.BRONZE.COMPANY_INDUSTRIES,
 -- Check table content
 select* from LINKEDIN.SILVER.COMPANY_INDUSTRIES;
 ```
+- La table COMPANY_INDUSTRIES est créée dans la couche Silver avec CREATE OR REPLACE TABLE.
+- Les données proviennent de la table LINKEDIN.BRONZE.COMPANY_INDUSTRIES.
+- La fonction LATERAL FLATTEN(input => data) est utilisée pour parcourir le JSON.
+- Chaque association entreprise–industrie devient une ligne.
+- L’identifiant de l’entreprise est extrait avec f.value:company_id::BIGINT.
+- Ce champ est converti en type numérique.
+- Le secteur d’activité est extrait avec f.value:industry::STRING.
+- Le champ industry est nettoyé avec TRIM.
+- La fonction NULLIF(..., '') remplace les chaînes vides par NULL.
+- Aucune normalisation métier n’est appliquée au secteur.
+- La table permet d’associer chaque entreprise à son industrie.
+- Les données semi‑structurées sont transformées en format relationnel.
+- La table Silver est reconstruite à partir de la couche Bronze.
+- Elle est prête pour les jointures analytiques dans la couche Gold.
+- La requête SELECT * FROM LINKEDIN.SILVER.COMPANY_INDUSTRIES permet de vérifier le résultat.
+
  * Table `COMPANY_SPECIALITIES`
 ```sql
 	--Create table COMPANY_SPECIALITIES
@@ -632,8 +688,24 @@ FROM LINKEDIN.BRONZE.COMPANY_SPECIALITIES,
      
 -- Check table content
 select* from LINKEDIN.SILVER.COMPANY_SPECIALITIES;
+```
+- La table COMPANY_SPECIALITIES est créée dans la couche Silver avec CREATE OR REPLACE TABLE.
+- Les données proviennent de la table LINKEDIN.BRONZE.COMPANY_SPECIALITIES.
+- La fonction LATERAL FLATTEN(input => data) est utilisée pour parcourir le fichier JSON.
+- Chaque spécialité est transformée en une ligne distincte.
+- L’identifiant de l’entreprise est extrait avec f.value:company_id::BIGINT.
+- Ce champ est converti en type numérique.
+- La spécialité est extraite avec f.value:speciality::STRING.
+- Le champ speciality est nettoyé avec TRIM.
+- La fonction NULLIF(..., '') remplace les chaînes vides par NULL.
+- Aucune traduction automatique n’est appliquée aux spécialités.
+- La table permet d’associer chaque entreprise à ses domaines d’expertise.
+- Les données semi‑structurées sont converties en format relationnel.
+- La table Silver est reconstruite à partir de la couche Bronze.
+- Elle est prête pour les jointures dans la couche Gold.
+- La requête SELECT * FROM LINKEDIN.SILVER.COMPANY_SPECIALITIES permet de vérifier le résultat.
 
- ```
+ 
 
 ## II. 6. 	Création des tables Gold
  * Table
