@@ -1,12 +1,12 @@
 # I. Introduction 
-## I. 1. Contexte
+## I.1. Contexte
 Avec l’essor des plateformes professionnelles comme LinkedIn, une grande quantité de données est générée quotidiennement autour du marché de l’emploi : offres d’emploi, compétences demandées, secteurs d’activité, types de contrats, salaires, etc.
 Ces données représentent une source stratégique majeure pour analyser les tendances du recrutement, comprendre les besoins des entreprises et anticiper l’évolution des compétences recherchées.  
 
 Dans ce projet, nous exploitons un jeu de données LinkedIn en mettant en œuvre une architecture data moderne de type Medallion (Bronze / Silver / Gold) sur Snowflake, couplée à une application de visualisation interactive développée avec Streamlit. 
 
 
-## I. 2. Objectifs  
+## I.2. Objectifs  
 Les objectifs principaux du projet sont :
 
 * Mettre en place une architecture de données robuste et scalable
@@ -16,7 +16,7 @@ Les objectifs principaux du projet sont :
 * Développer un tableau de bord interactif pour la visualisation des résultats
 
   
-## I. 3. Présentation du jeu de données
+## I.3. Présentation du jeu de données
 Le projet repose sur plusieurs fichiers issus de LinkedIn :
 |Fichier |                      Description  |
 |--------|-----------------------------------|  
@@ -30,7 +30,7 @@ job_postings.csv  | Offres d’emploi (poste, salaire, localisation, type de con
 |company_specialities.json	               | Spécialités des entreprises |
 
 Ces données sont hétérogènes (CSV + JSON), avec des formats variables et parfois bruités.
-## I. 4. Architecture Medallion
+## I.4. Architecture Medallion
 L’architecture Medallion se compose de trois couches :
 
 * `Bronze` : données brutes, sans transformation
@@ -43,8 +43,8 @@ Cette approche permet :
 * Une séparation claire des responsabilités.
 * Une optimisation des performances analytiques.
 
-# II . Étapes Réalisées
-## II . 1. Création de la Base de Données
+# II. Étapes Réalisées
+## II.1. Création de la Base de Données
 
 ```sql
 -- Create Databse
@@ -52,7 +52,7 @@ CREATE  DATABASE IF NOT EXISTS  linkedin;
 
 ```
 La création d’une base de données dédiée au projet permet de centraliser l’ensemble des couches de l’architecture Medallion (Bronze, Silver et Gold), tandis que l’utilisation de la clause IF NOT EXISTS évite les erreurs lors des relances successives du script.
-  ## II 2.2. Création du schéma Bronze 
+  ## II.2. Création du schéma `Bronze` 
 ```sql
 -- Create Schema BRONZE
 CREATE SCHEMA IF NOT EXISTS linkedin.BRONZE;
@@ -72,7 +72,7 @@ URL = 's3://snowflake-lab-bucket/';
 * Centralise tous les fichiers sources
 * Facilite les commandes COPY INTO
   
-## 2.4 Création des tables dans le shéma Bronze et chargement des données
+## II.4. Création des tables dans le shéma `Bronze` et chargement des données
 ### Code
 ```sql
 -- Create Table JOB_POSTINGS
@@ -261,7 +261,7 @@ La commande COPY INTO est également utilisée pour charger les fichiers JSON, e
 
 Après chaque chargement, une requête SELECT * est exécutée afin de vérifier immédiatement le contenu de la table BRONZE et s’assurer que les données ont été correctement ingérées
 ### Apperçu des tables du schéma `Bronze`
-#### Table JOB_POSTINGS
+#### Table `LINKEDIN.BRONZE.JOB_POSTINGS`
 ![job](images/job_posting_bronze1.png)
 
 ![job](images/job_posting_bronze2.png)
@@ -270,42 +270,42 @@ Après chaque chargement, une requête SELECT * est exécutée afin de vérifier
 
 * Les résultats confirment la présence de données riches mais hétérogènes, avec des salaires, des dates et des indicateurs encore non normalisés, l’ensemble des colonnes prévues ayant été correctement chargées dans la table.
 
-#### Table `BENEFITS`
+#### Table `LINKEDIN.BRONZE.BENEFITS`
 ![job](images/benefits_bronze.png)
 
 * Les résultats montrent que la table `BENEFITS` contient des informations détaillées sur les avantages associés aux offres d’emploi, avec des indicateurs inferred et des types d’avantages exprimés sous forme textuelle et numérique, l’ensemble des colonnes prévues dans le fichier CSV ayant été correctement chargé sans transformation.
 
-#### Table `COMPANIES`
+#### Table `LINKEDIN.BRONZE.COMPANIES`
 ![job](images/companies_bronze.png)
 
 * Les résultats montrent que la table `COMPANIES` contient des données d’entreprises stockées sous forme JSON dans une colonne de type VARIANT, incluant des informations telles que l’identifiant de l’entreprise, la localisation, la taille et la description, l’ensemble des données ayant été chargé tel quel depuis le fichier source sans transformation.
 
-#### Table `EMPLOYEE_COUNTS`
+#### Table `LINKEDIN.BRONZE.EMPLOYEE_COUNTS`
 ![job](images/employee_counts_bronze.png)
 
 * Les résultats montrent que la table `EMPLOYEE_COUNTS` contient des informations brutes sur la taille des entreprises et leur popularité, avec des effectifs, des nombres d’abonnés et des horodatages stockés sous des formats numériques et textuels encore non normalisés, l’ensemble des colonnes du fichier CSV ayant été correctement chargé.
 
-#### Table `JOB_SKILLS`
+#### Table `LINKEDIN.BRONZE.JOB_SKILLS`
 ![job](images/job_skills.png)
 
 * Les résultats montrent que la table `JOB_SKILLS` contient des associations entre les offres d’emploi et les compétences correspondantes, identifiées par des codes abrégés, avec des doublons possibles et des valeurs encore non normalisées, l’ensemble des colonnes du fichier CSV ayant été correctement chargé.
 
-#### Table `JOB_INDUSTRIES`
+#### Table `LINKEDIN.BRONZE.JOB_INDUSTRIES`
 ![job](images/job_industries_bronze.png)
 
 * Les résultats montrent que la table `JOB_INDUSTRIES` contient des associations entre les offres d’emploi et leurs secteurs d’activité, stockées sous forme de données semi‑structurées (JSON) dans une colonne VARIANT, les informations ayant été chargées telles quelles depuis le fichier source sans transformation.
 
-#### Table `COMPANY_INDUSTRIES`
+#### Table `LINKEDIN.BRONZE.COMPANY_INDUSTRIES`
 ![job](images/cmpanies_industries_bronze.png)
 
 * Les résultats montrent que la table `COMPANY_INDUSTRIES` contient des associations entre les entreprises et leurs secteurs d’activité, stockées sous forme de données semi‑structurées (JSON) dans une colonne VARIANT, l’ensemble des informations ayant été chargé depuis le fichier source sans transformation préalable.
   
-#### Table `COMPANY_SPECIALITIES`
+#### Table `LINKEDIN.BRONZE.COMPANY_SPECIALITIES`
 ![job](images/companies_specialite_bronze.png)
 
 * Les résultats montrent que la table `COMPANY_SPECIALITIES` contient des informations sur les domaines de spécialisation des entreprises, stockées sous forme de données semi‑structurées (JSON) dans une colonne VARIANT, l’ensemble des spécialités ayant été chargé tel quel depuis le fichier source sans transformation.
 
-## II. 5.	Création des tables dans le schéma `Silver`
+## II.5. Création des tables dans le schéma `Silver`
 
 ### Code
 ```sql
@@ -604,7 +604,7 @@ select* from LINKEDIN.SILVER.COMPANY_SPECIALITIES;
 ```
 #### Schéma `Silver`
 La création du schéma `Silver` suis le même logique que le schéma `Bronze, il a pour rôle de nettoyer, typer et normaliser les données issues de la couche Bronze en appliquant des règles de qualité et de cohérence, afin de préparer des données fiables et structurées pour l’analyse.
-#### Table `JOB_POSTINGS`
+#### Table `LINKEDIN.SILVER.JOB_POSTINGS`
 
 - La table JOB_POSTINGS est créée dans la couche Silver avec l’instruction CREATE OR REPLACE TABLE.
 - Les données proviennent directement de la table LINKEDIN.BRONZE.JOB_POSTINGS via la clause FROM.
@@ -632,7 +632,7 @@ La création du schéma `Silver` suis le même logique que le schéma `Bronze, i
 - La requête SELECT * FROM LINKEDIN.SILVER.JOB_POSTINGS permet de vérifier le résultat final.
 
 
-#### Table BENEFITS
+#### Table `LINKEDIN.SILVER.BENEFITS`
 
 - La table BENEFITS est créée dans la couche Silver avec CREATE OR REPLACE TABLE.
 - Elle est construite à partir de la table LINKEDIN.BRONZE.BENEFITS via la clause FROM.
@@ -653,7 +653,7 @@ La création du schéma `Silver` suis le même logique que le schéma `Bronze, i
 - La requête SELECT * FROM LINKEDIN.SILVER.BENEFITS permet de vérifier le résultat final.
 
 
-#### Table COMPANIES
+#### Table `LINKEDIN.SILVER.COMPANIES`
 
 - La table COMPANIES est créée dans la couche Silver avec CREATE OR REPLACE TABLE.
 - Les données proviennent de la table LINKEDIN.BRONZE.COMPANIES.
@@ -672,7 +672,7 @@ La création du schéma `Silver` suis le même logique que le schéma `Bronze, i
 - Elle prépare les données pour les jointures analytiques futures.
 
 
-#### Table EMPLOYEE_COUNTS
+#### Table `LINKEDIN.SILVER.EMPLOYEE_COUNTS`
 
 - La table EMPLOYEE_COUNTS est créée dans la couche Silver avec CREATE OR REPLACE TABLE.
 - Les données proviennent de la table LINKEDIN.BRONZE.EMPLOYEE_COUNTS.
@@ -689,7 +689,7 @@ La création du schéma `Silver` suis le même logique que le schéma `Bronze, i
 - Une déduplication est appliquée afin de conserver uniquement l’enregistrement le plus récent par entreprise (company_id).
 
 
-#### Table JOB_SKILLS
+#### Table `LINKEDIN.SILVER.JOB_SKILLS`
 
 - La table JOB_SKILLS est créée à partir de la couche Bronze.
 - L’identifiant de l’offre est converti en numérique avec TRY_TO_NUMBER(job_id).
@@ -699,7 +699,7 @@ La création du schéma `Silver` suis le même logique que le schéma `Bronze, i
 - Cette approche garantit une seule occurrence de chaque compétence par offre.
 
 
-#### Table JOB_INDUSTRIES
+#### Table `LINKEDIN.SILVER.JOB_INDUSTRIES`
 
 - La table JOB_INDUSTRIES est créée dans la couche Silver avec CREATE OR REPLACE TABLE.
 - Les données proviennent de la table LINKEDIN.BRONZE.JOB_INDUSTRIES.
@@ -711,7 +711,7 @@ La création du schéma `Silver` suis le même logique que le schéma `Bronze, i
 - Une déduplication explicite est appliquée sur la clé (job_id, industry_id) à l’aide de ROW_NUMBER().
 
 
-#### Table COMPANY_INDUSTRIES
+#### Table `LINKEDIN.SILVER.COMPANY_INDUSTRIES`
 
 - La table COMPANY_INDUSTRIES est créée dans la couche Silver avec CREATE OR REPLACE TABLE.
 - Les données proviennent de LINKEDIN.BRONZE.COMPANY_INDUSTRIES.
@@ -722,7 +722,7 @@ La création du schéma `Silver` suis le même logique que le schéma `Bronze, i
 - Une déduplication explicite est appliquée sur la clé métier (company_id, industry).
 
 
-#### Table COMPANY_SPECIALITIES
+#### Table `LINKEDIN.SILVER.COMPANY_SPECIALITIES`
 
 - La table COMPANY_SPECIALITIES est créée dans la couche Silver avec CREATE OR REPLACE TABLE.
 - Les données proviennent de la table LINKEDIN.BRONZE.COMPANY_SPECIALITIES.
@@ -733,47 +733,47 @@ La création du schéma `Silver` suis le même logique que le schéma `Bronze, i
 - Une déduplication explicite est appliquée sur (company_id, speciality).
 - La table est prête à être utilisée dans la couche Gold.
 ### Apperçu des tables du schéma `Silver`
-#### Table `JOB_POSTINGS`
+#### Table `LINKEDIN.SILVER.JOB_POSTINGS`
 ![job](images/job_posting_silver1.png)
 ![job](images/job_posting_silver2.png)
 ![job](images/job_posting_silver.png)
 
 * Les résultats montrent que la table `LINKEDIN.SILVER.JOB_POSTINGS` contient des données structurées et normalisées sur les offres d’emploi, avec des salaires convertis en valeurs numériques, des dates transformées en timestamps, des indicateurs booléens homogénéisés et la suppression des doublons.
 
-#### Table `BENEFITS`
+#### Table `LINKEDIN.SILVER.BENEFITS`
 ![job](images/benefits_silver.png)
 
 * Les résultats montrent que la table `LINKEDIN.SILVER.BENEFITS` contient des données normalisées sur les avantages associés aux offres d’emploi, avec un indicateur inferred converti en valeur booléenne et des types d’avantages nettoyés et homogénéisés.
 
-#### Table `COMPANIES`
+#### Table `LINKEDIN.SILVER.COMPANIES`
 ![job](images/companies_silver.png)
 
 * Les résultats montrent que la table `LINKEDIN.SILVER.COMPANIES` contient des données d’entreprises structurées et nettoyées, avec des identifiants uniques, des informations de localisation, des tailles d’entreprise converties en valeurs numériques et des champs textuels homogénéisés.
   
-#### Table `EMPLOYEE_COUNTS`
+#### Table `LINKEDIN.SILVER.EMPLOYEE_COUNTS`
 ![job](images/employee_counts_silver.png)
 * Les résultats montrent que la table `LINKEDIN.SILVER.EMPLOYEE_COUNTS` contient des données consolidées et normalisées sur les entreprises, avec des effectifs et des nombres d’abonnés convertis en valeurs numériques et un horodatage unique par entreprise.
-#### Table `JOB_SKILLS`
+#### Table `LINKEDIN.SILVER.JOB_SKILLS`
 ![job](images/job_skills_silver.png)
 
 * Les résultats montrent que la table `LINKEDIN.SILVER.JOB_SKILLS` contient des associations normalisées entre les offres d’emploi et leurs compétences, avec des identifiants d’offres convertis en valeurs numériques et des codes de compétences nettoyés et homogénéisés.
   
-#### Table `JOB_INDUSTRIES`
+#### Table `LINKEDIN.SILVER.JOB_INDUSTRIES`
 ![job](images/job_industries_silver.png)
 
 * Les résultats montrent que la table `LINKEDIN.SILVER.JOB_INDUSTRIES` contient des associations nettoyées et dédupliquées entre les offres d’emploi et les identifiants d’industries, avec des champs numériques cohérents.
   
-#### Table `COMPANY_INDUSTRIES`
+#### Table `LINKEDIN.SILVER.COMPANY_INDUSTRIES`
 ![job](images/cmpanies_industries_silver.png)
 
 * Les résultats montrent que la table LINKEDIN.SILVER.COMPANY_INDUSTRIES contient des associations normalisées et dédupliquées entre les entreprises et leurs secteurs d’activité, avec des libellés d’industries nettoyés et homogénéisés.
 
-#### Table COMPANY_SPECIALITIES
+#### Table `LINKEDIN.SILVER.COMPANY_SPECIALITIES`
 ![job](images/companies_specialite_silver.png)
 
 * Les résultats montrent que la table LINKEDIN.SILVER.COMPANY_SPECIALITIES contient des données normalisées et dédupliquées sur les domaines de spécialisation des entreprises, avec des libellés nettoyés et homogénéisés.
 
-## II. 6. 	Création des tables dans le schéma Gold
+## II. 6. Création des tables dans le schéma `Gold`
 ### Code
 ```sql
 -- Create schema GOLD
@@ -898,7 +898,7 @@ SELECT * FROM LINKEDIN.GOLD.JOB_ANALYTICS;
 ```
 #### Schéma `Gold`
  La création du schéma `Gold` suis la même logique que les schémas `Bronze` et `Silver`, il a pour rôle de consolider et d’enrichir les données nettoyées afin de produire des tables analytiques optimisées, directement exploitables pour les analyses métier et les outils de visualisation.
-#### Table `JOB_POSTING`
+#### Table `LINKEDIN.GOLD.JOB_POSTING`
 
 - La table JOB_POSTINGS est créée dans la couche Gold avec CREATE OR REPLACE TABLE.
 - Les données proviennent de la table LINKEDIN.SILVER.JOB_POSTINGS.
@@ -914,7 +914,7 @@ SELECT * FROM LINKEDIN.GOLD.JOB_ANALYTICS;
 - Elle sert de source principale pour les tableaux de bord.
 - Elle est utilisée directement par l’application Streamlit.
 - La requête SELECT * FROM LINKEDIN.GOLD.JOB_POSTINGS permet de vérifier le contenu final.
- #### Table `JOB_INDUSTRIES`
+ #### Table `LINKEDIN.GOLD.JOB_INDUSTRIES`
 
 - La table JOB_INDUSTRIES est créée dans la couche Gold avec CREATE OR REPLACE TABLE.
 - Les données proviennent de la table LINKEDIN.SILVER.JOB_INDUSTRIES.
@@ -929,7 +929,7 @@ SELECT * FROM LINKEDIN.GOLD.JOB_ANALYTICS;
 - Elle est exploitée par l’application Streamlit.
 - La requête SELECT * FROM LINKEDIN.GOLD.JOB_INDUSTRIES permet de vérifier le contenu.
   
- #### Table `JOB_SKILLS`
+ #### Table `LINKEDIN.GOLD.JOB_SKILLS`
 
 - La table JOB_SKILLS est créée dans la couche Gold avec CREATE OR REPLACE TABLE.
 - Les données proviennent de la table LINKEDIN.SILVER.JOB_SKILLS.
@@ -943,7 +943,7 @@ SELECT * FROM LINKEDIN.GOLD.JOB_ANALYTICS;
 - Elle est utilisée dans les analyses finales et les tableaux de bord.
 - La requête SELECT * FROM LINKEDIN.GOLD.JOB_SKILLS permet de vérifier le contenu.
   
-#### Table `COMPANY_PROFILE`
+#### Table `LINKEDIN.GOLD.COMPANY_PROFILE`
 
 - La table COMPANY_PROFILE est créée dans la couche Gold avec CREATE OR REPLACE TABLE.
 - Les données proviennent de la table LINKEDIN.SILVER.COMPANIES, référencée par l’alias c.
@@ -962,7 +962,7 @@ SELECT * FROM LINKEDIN.GOLD.JOB_ANALYTICS;
 - Elle est utilisée dans les jointures avec les offres d’emploi.
 - La requête SELECT * FROM LINKEDIN.GOLD.COMPANY_PROFILE permet de vérifier le contenu final.
 
-#### Table `JOB_ANALYTICS`
+#### Table `LINKEDIN.GOLD.JOB_ANALYTICS`
 
 - La table JOB_ANALYTICS est créée dans la couche Gold avec CREATE OR REPLACE TABLE.
 - Elle constitue la table analytique centrale du projet.
@@ -989,7 +989,7 @@ SELECT * FROM LINKEDIN.GOLD.JOB_ANALYTICS;
 - Elle est utilisée par les requêtes analytiques finales.
 - Elle sert de source principale pour l’application Streamlit.
 - La requête SELECT * FROM LINKEDIN.GOLD.JOB_ANALYTICS permet de vérifier le contenu.
-- ### Apperçu des tables du schéma Gold
+- ### Apperçu des tables du schéma `Gold`
 #### Table `JOB_POSTINGS`
 ![job](images/job_posting_gold1.png)
 ![job](images/job_posting_gold2.png)
@@ -997,23 +997,23 @@ SELECT * FROM LINKEDIN.GOLD.JOB_ANALYTICS;
 
 * Les résultats montrent que la table `LINKEDIN.GOLD.JOB_POSTINGS` contient des offres d’emploi complètes, propres et prêtes à l’analyse, avec des salaires numériques, des dates correctement typées, des indicateurs booléens normalisés et uniquement des enregistrements valides.
 
-#### Table `COMPANY_PROFILE`
+#### Table `LINKEDIN.GOLD.COMPANY_PROFILE`
 ![job](images/company_profile.png)
 
 * Les résultats montrent que la table `LINKEDIN.GOLD.COMPANY_PROFILE` contient des profils d’entreprises consolidés et propres, avec des informations cohérentes sur la taille, la localisation, les effectifs et le nombre d’abonnés.
 
-#### Table `JOB_SKILLS`
+#### Table `LINKEDIN.GOLD.JOB_SKILLS`
 
 ![job](images/job_skills_gold.png)
 
 * Les résultats montrent que la table `LINKEDIN.GOLD.JOB_SKILLS` contient des associations propres et validées entre les offres d’emploi et les compétences correspondantes, avec des identifiants non nuls et des compétences homogénéisées.
 
-#### Table `JOB_INDUSTRIES`
+#### Table `LINKEDIN.GOLD.JOB_INDUSTRIES`
 ![job](images/job_industries_gold.png)
 
 * Les résultats montrent que la table `LINKEDIN.GOLD.JOB_INDUSTRIES` contient des associations propres et validées entre les offres d’emploi et leurs identifiants d’industries, avec des valeurs non nulles et dédupliquées.
 
-#### Table `JOB_ANALYTICS`
+#### Table `LINKEDIN.GOLD.JOB_ANALYTICS`
 ![job](images/job_analytics1.png)
 ![job](images/job_analytics2.png)
 
@@ -1661,7 +1661,13 @@ Solution apportée :
 Une logique de jointure adaptée a été mise en place, notamment via la conversion explicite des identifiants et l’utilisation de jointures externes (LEFT JOIN) afin de conserver un maximum d’informations analytiques tout en évitant la perte de données.
 
 
-# IV.	Conclusions 
+# IV. Conclusions 
+Ce projet a permis de mettre en œuvre une chaîne complète de traitement de données, depuis l’ingestion de données brutes jusqu’à leur exploitation analytique et leur visualisation interactive. À travers l’architecture Medallion (Bronze, Silver, Gold), les données issues de LinkedIn ont été progressivement structurées, nettoyées et enrichies, garantissant à la fois leur traçabilité, leur qualité et leur cohérence.
 
+La couche Bronze a assuré la conservation fidèle des données sources malgré leur forte hétérogénéité, tandis que la couche Silver a joué un rôle central dans la normalisation, le typage et la déduplication des informations. Enfin, la couche Gold a permis de produire des tables analytiques fiables et optimisées, servant de base aux analyses métier et aux indicateurs clés.
+
+L’application Streamlit constitue l’aboutissement du projet en valorisant les données de la couche Gold par des visualisations claires, interactives et orientées métier. Elle facilite l’exploration du marché de l’emploi en mettant en évidence les tendances liées aux secteurs d’activité, aux types de contrats, aux salaires et aux compétences les plus demandées.
+
+Malgré des difficultés liées à la qualité initiale du jeu de données et à la gestion de formats hétérogènes, les solutions mises en place démontrent l’intérêt d’une architecture data bien structurée et de bonnes pratiques en ingénierie des données. Ce projet illustre ainsi de manière concrète comment transformer des données complexes et imparfaites en informations exploitables pour l’aide à la décision.
 
 
