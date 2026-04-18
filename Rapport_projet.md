@@ -1645,8 +1645,8 @@ L’ensemble des visualisations repose sur des requêtes SQL cohérentes avec ce
 ![job](images/app1.png)
 ![job](images/app2.png)
 ![job](images/app3.png)
-![job](images/app3.png)
 ![job](images/app4.png)
+![job](images/app5.png)
 
 
 # III.	Difficultés et solutions apportées
