@@ -717,7 +717,7 @@ La création du schéma `Silver` suis le même logique que le schéma `Bronze, i
 #### Table `JOB_POSTINGS`
 ![job](images/job_posting_silver1.png)
 ![job](images/job_posting_silver2.png)
-![job](images/job_posting_silver3.png)
+![job](images/job_posting_silver.png)
 #### Table `BENEFITS`
 ![job](images/benefits_silver.png)
 #### Table `COMPANIES`
