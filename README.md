@@ -1616,7 +1616,42 @@ Cette section permet d’identifier les formes d’emploi les plus répandues.
 L’application Streamlit complète efficacement les traitements réalisés dans Snowflake en offrant une interface interactive et visuelle. Elle permet une exploration dynamique des données et rend les analyses accessibles à un public non technique.
 L’ensemble des visualisations repose sur des requêtes SQL cohérentes avec celles décrites dans le rapport, assurant une continuité entre la phase de transformation des données et leur exploitation analytique.
 
-# III.	Difficultés et solutions apportées 
+# III.	Difficultés et solutions apportées
+
+## III. 1. Hétérogénéité et faible qualité des données sources
+Le principal problème identifié concerne la qualité globale des données en entrée. Les fichiers sources contiennent de nombreuses valeurs manquantes, des formats incohérents et des représentations multiples pour des champs censés être homogènes.
+
+Par exemple, les champs liés aux salaires (min_salary, med_salary, max_salary) sont souvent absents, stockés sous forme de chaînes de caractères ou exprimés avec des formats différents. De même, les champs temporels (listed_time, expiry, closed_time) sont exprimés tantôt en secondes, tantôt en millisecondes, ce qui rend leur exploitation directe impossible. Les indicateurs booléens, tels que remote_allowed ou sponsored, présentent également plusieurs formes possibles (texte, entier ou booléen).
+
+* Solution apportée :
+La mise en place de la couche Silver a permis de résoudre ces problèmes grâce à des règles de nettoyage et de normalisation explicites. Les fonctions TRY_TO_NUMBER, TRY_TO_BOOLEAN et TO_TIMESTAMP_NTZ, combinées à des conditions CASE WHEN, ont permis de convertir de manière robuste les données hétérogènes en formats exploitables tout en évitant les erreurs de chargement.
+
+## III. 2. Données semi‑structurées complexes (JSON)
+Une autre difficulté majeure a été la gestion des données semi‑structurées fournies sous forme de fichiers JSON, notamment pour les tables COMPANIES, JOB_INDUSTRIES, COMPANY_INDUSTRIES et COMPANY_SPECIALITIES. Ces fichiers contiennent des structures imbriquées rendant leur exploitation analytique directe impossible.
+* Solution apportée :
+L’utilisation conjointe du type VARIANT dans la couche Bronze et de la fonction LATERAL FLATTEN dans la couche Silver a permis de transformer ces données semi‑structurées en tables relationnelles normalisées. Cette approche a garanti la conservation de l’information tout en rendant les données facilement jointables et exploitables dans les couches analytiques ultérieures.
+
+## III. 3. Présence de doublons et incohérences d’identifiants
+Les données sources contiennent de nombreux doublons, notamment au niveau des offres d’emploi, des compétences et des associations entre entités. Plusieurs enregistrements partagent le même identifiant (job_id ou company_id) mais avec des informations différentes ou des répétitions non justifiées.
+* Solution apportée :
+Des fonctions analytiques telles que ROW_NUMBER() accompagnées de clauses QUALIFY ont été utilisées dans la couche Silver afin de dédupliquer les données et de ne conserver que les enregistrements les plus pertinents. Cette étape a permis d’assurer l’unicité des clés et la cohérence des jointures dans la couche Gold.
+
+## III. 4. Absence de correspondance explicite entre identifiants et libellés métier
+Dans les données, les secteurs d’activité sont identifiés uniquement par des codes numériques (industry_id), sans libellé lisible. Cette situation compliquait l’interprétation des résultats analytiques et la visualisation dans l’application Streamlit.
+* Solution apportée :
+Un mapping officiel des industries LinkedIn a été intégré dans l’application Streamlit afin de traduire les identifiants numériques en libellés métiers compréhensibles. Cette solution a significativement amélioré la lisibilité des graphiques et facilité l’analyse par secteur d’activité.
+
+## III. 5. Absence de typage fiable dans les données sources
+Les fichiers CSV utilisés comme sources contiennent des valeurs numériques, booléennes et temporelles stockées exclusivement sous forme de chaînes de caractères, sans typage explicite. Cette situation empêche toute exploitation directe des données pour des calculs statistiques, des comparaisons ou des jointures fiables.
+De plus, les champs temporels représentant des dates et des heures sont exprimés de manière hétérogène, certains timestamps étant encodés en secondes et d’autres en millisecondes, ce qui entraîne des incohérences lors de leur conversion et de leur interprétation.
+* Solution apportée :
+Ces problèmes ont été résolus dans la couche Silver par la mise en place de conversions robustes à l’aide des fonctions TRY_TO_NUMBER, TRY_TO_BOOLEAN et TO_TIMESTAMP_NTZ, associées à des conditions permettant de distinguer automatiquement les formats de timestamps. Cette approche garantit un typage cohérent des données tout en évitant les erreurs liées aux valeurs invalides ou manquantes.
+
+6. Complexité de consolidation des données analytiques
+La construction de la table JOB_ANALYTICS a nécessité la combinaison de plusieurs tables Gold issues de sources différentes. Les identifiants n’étaient pas toujours directement compatibles, en particulier pour les entreprises.
+Solution apportée :
+Une logique de jointure adaptée a été mise en place, notamment via la conversion explicite des identifiants et l’utilisation de jointures externes (LEFT JOIN) afin de conserver un maximum d’informations analytiques tout en évitant la perte de données.
+
 
 # IV.	Conclusions 
 
