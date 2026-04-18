@@ -738,7 +738,7 @@ La création du schéma `Silver` suis le même logique que le schéma `Bronze, i
 ![job](images/job_posting_silver2.png)
 ![job](images/job_posting_silver.png)
 
-*Les résultats montrent que la table `LINKEDIN.SILVER.JOB_POSTINGS` contient des données structurées et normalisées sur les offres d’emploi, avec des salaires convertis en valeurs numériques, des dates transformées en timestamps, des indicateurs booléens homogénéisés et la suppression des doublons.
+* Les résultats montrent que la table `LINKEDIN.SILVER.JOB_POSTINGS` contient des données structurées et normalisées sur les offres d’emploi, avec des salaires convertis en valeurs numériques, des dates transformées en timestamps, des indicateurs booléens homogénéisés et la suppression des doublons.
 
 #### Table `BENEFITS`
 ![job](images/benefits_silver.png)
@@ -995,18 +995,29 @@ SELECT * FROM LINKEDIN.GOLD.JOB_ANALYTICS;
 ![job](images/job_posting_gold2.png)
 ![job](images/job_posting_gold3.png)
 
+* Les résultats montrent que la table `LINKEDIN.GOLD.JOB_POSTINGS` contient des offres d’emploi complètes, propres et prêtes à l’analyse, avec des salaires numériques, des dates correctement typées, des indicateurs booléens normalisés et uniquement des enregistrements valides.
+
 #### Table `COMPANY_PROFILE`
 ![job](images/company_profile.png)
+
+* Les résultats montrent que la table `LINKEDIN.GOLD.COMPANY_PROFILE` contient des profils d’entreprises consolidés et propres, avec des informations cohérentes sur la taille, la localisation, les effectifs et le nombre d’abonnés.
 
 #### Table `JOB_SKILLS`
 
 ![job](images/job_skills_gold.png)
+
+* Les résultats montrent que la table `LINKEDIN.GOLD.JOB_SKILLS` contient des associations propres et validées entre les offres d’emploi et les compétences correspondantes, avec des identifiants non nuls et des compétences homogénéisées.
+
 #### Table `JOB_INDUSTRIES`
 ![job](images/job_industries_gold.png)
+
+* Les résultats montrent que la table `LINKEDIN.GOLD.JOB_INDUSTRIES` contient des associations propres et validées entre les offres d’emploi et leurs identifiants d’industries, avec des valeurs non nulles et dédupliquées.
 
 #### Table `JOB_ANALYTICS`
 ![job](images/job_analytics1.png)
 ![job](images/job_analytics2.png)
+
+* Les résultats montrent que la table `LINKEDIN.GOLD.JOB_ANALYTICS` centralise des données analytiques complètes sur les offres d’emploi, en combinant les informations sur les postes, les entreprises, les secteurs d’activité, les niveaux d’expérience, les salaires et les caractéristiques des contrat.
 
 
 ## II. 7.	Requêtes d’analyse de données 
