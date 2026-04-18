@@ -646,7 +646,7 @@ select* from LINKEDIN.SILVER.COMPANY_SPECIALITIES;
 - La table Silver est entièrement reconstruite à partir de la couche Bronze.
 - Une déduplication explicite est appliquée afin de conserver uniquement l’enregistrement le plus récent par entreprise.
 - La requête SELECT * FROM LINKEDIN.SILVER.EMPLOYEE_COUNTS permet de vérifier le résultat.
-- 
+  
  #### Table `JOB_SKILLS`
  
 - La table JOB_SKILLS est créée à partir de la couche Bronze.
@@ -655,7 +655,7 @@ select* from LINKEDIN.SILVER.COMPANY_SPECIALITIES;
 - Une déduplication est appliquée sur la clé métier (job_id, skill_abr).
 - Cette approche garantit une seule occurrence de chaque compétence par offre.
 - La requête SELECT * FROM LINKEDIN.SILVER.JOB_SKILLS permet de vérifier le contenu
- * Table `JOB_INDUSTRIES`
+ #### Table `JOB_INDUSTRIES`
 - La table JOB_INDUSTRIES est créée dans la couche Silver avec CREATE OR REPLACE TABLE.
 - Les données proviennent de la table LINKEDIN.BRONZE.JOB_INDUSTRIES.
 - La fonction LATERAL FLATTEN(input => data) est utilisée pour parcourir le fichier JSON.
