@@ -15,7 +15,7 @@ Ce projet a pour objectif d’analyser le marché de l’emploi à partir de don
 - **linkedin_streamlit_application.py** : application Streamlit de visualisation et d’analyse  
 - **images/** : captures d’écran utilisées dans le rapport (résultats SQL et application Streamlit)  
 
-## Travail effectué par
+## Travail réalisé par
 
 - **ZINET Sara**
 - **DJENNOUNE Mouloud-Amayas**
