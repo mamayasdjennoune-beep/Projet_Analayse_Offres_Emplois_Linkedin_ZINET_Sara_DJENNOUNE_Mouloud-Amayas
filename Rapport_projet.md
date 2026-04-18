@@ -1,3 +1,13 @@
+
+---
+
+**Travail réalisé par :**  
+- **ZINET Sara**
+- **DJENNOUNE Mouloud-Amayas**
+
+---
+
+
 # I. Introduction 
 ## I.1. Contexte
 Avec l’essor des plateformes professionnelles comme LinkedIn, une grande quantité de données est générée quotidiennement autour du marché de l’emploi : offres d’emploi, compétences demandées, secteurs d’activité, types de contrats, salaires, etc.
