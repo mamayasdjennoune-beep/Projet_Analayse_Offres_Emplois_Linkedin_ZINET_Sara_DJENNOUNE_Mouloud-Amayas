@@ -560,7 +560,7 @@ WHERE rn = 1;
 select* from LINKEDIN.SILVER.COMPANY_SPECIALITIES;
 
 ```
-* Table `JOB_POSTINGS`
+#### Table `JOB_POSTINGS`
 - La table JOB_POSTINGS est créée dans la couche Silver avec l’instruction CREATE OR REPLACE TABLE.
 - Les données proviennent directement de LINKEDIN.BRONZE.JOB_POSTINGS via la clause FROM.
 - L’identifiant de l’offre est converti en numérique avec job_id::BIGINT.
@@ -586,7 +586,7 @@ select* from LINKEDIN.SILVER.COMPANY_SPECIALITIES;
 - La déduplication est réalisée via `ROW_NUMBER()` combiné à `QUALIFY`, en conservant uniquement l’offre la plus récente  par `job_id`.
 - La requête SELECT * FROM LINKEDIN.SILVER.JOB_POSTINGS permet de vérifier le résultat final.
 
- * Table `BENEFITS`
+ #### Table `BENEFITS`
 
 - La table BENEFITS est créée dans la couche Silver avec CREATE OR REPLACE TABLE.
 - Elle est construite à partir de la table LINKEDIN.BRONZE.BENEFITS via la clause FROM.
@@ -605,7 +605,8 @@ select* from LINKEDIN.SILVER.COMPANY_SPECIALITIES;
 - La table Silver est entièrement reconstruite à partir de la couche Bronze.
 -  La déduplication garantit une seule occurrence par couple `(job_id, type)`.
 - La requête SELECT * FROM LINKEDIN.SILVER.BENEFITS permet de vérifier le résultat final.
- * Table `COMPANIES`
+  
+ #### Table `COMPANIES`
 
 - La table COMPANIES est créée dans la couche Silver avec CREATE OR REPLACE TABLE.
 - Les données proviennent de la table LINKEDIN.BRONZE.COMPANIES.
@@ -626,7 +627,8 @@ select* from LINKEDIN.SILVER.COMPANY_SPECIALITIES;
 - Cette table permet de structurer les données semi‑structurées.
 - Elle prépare les données pour les jointures analytiques futures.
 - La requête SELECT * FROM LINKEDIN.SILVER.COMPANIES permet de vérifier le résultat.
- * Table `EMPLOYEE_COUNTS`
+  
+ #### Table `EMPLOYEE_COUNTS`
 
 - La table EMPLOYEE_COUNTS est créée dans la couche Silver avec CREATE OR REPLACE TABLE.
 - Les données proviennent de la table LINKEDIN.BRONZE.EMPLOYEE_COUNTS.
@@ -644,7 +646,9 @@ select* from LINKEDIN.SILVER.COMPANY_SPECIALITIES;
 - La table Silver est entièrement reconstruite à partir de la couche Bronze.
 - Une déduplication explicite est appliquée afin de conserver uniquement l’enregistrement le plus récent par entreprise.
 - La requête SELECT * FROM LINKEDIN.SILVER.EMPLOYEE_COUNTS permet de vérifier le résultat.
- * Table `JOB_SKILLS`
+- 
+ #### Table `JOB_SKILLS`
+ 
 - La table JOB_SKILLS est créée à partir de la couche Bronze.
 - L’identifiant de l’offre est converti en numérique.
 - Les compétences sont nettoyées et normalisées en majuscules afin d’éviter les doublons liés à la casse.
@@ -664,7 +668,7 @@ select* from LINKEDIN.SILVER.COMPANY_SPECIALITIES;
 - La table Silver est entièrement reconstruite depuis la couche Bronze.
 - La requête SELECT * FROM LINKEDIN.SILVER.JOB_INDUSTRIES permet de vérifier le résultat.
 
-* Table `COMPANY_INDUSTRIES`
+### Table `COMPANY_INDUSTRIES`
 - La table COMPANY_INDUSTRIES est créée dans la couche Silver avec CREATE OR REPLACE TABLE.
 - Les données proviennent de la table LINKEDIN.BRONZE.COMPANY_INDUSTRIES.
 - La fonction LATERAL FLATTEN(input => data) est utilisée pour parcourir le JSON.
@@ -675,7 +679,7 @@ select* from LINKEDIN.SILVER.COMPANY_SPECIALITIES;
 - La table Silver est reconstruite à partir de la couche Bronze.
 - La requête SELECT * FROM LINKEDIN.SILVER.COMPANY_INDUSTRIES permet de vérifier le résultat.
 
- * Table `COMPANY_SPECIALITIES`
+ #### Table `COMPANY_SPECIALITIES`
 - La table COMPANY_SPECIALITIES est créée dans la couche Silver avec CREATE OR REPLACE TABLE.
 - Les données proviennent de la table LINKEDIN.BRONZE.COMPANY_SPECIALITIES.
 - La fonction LATERAL FLATTEN(input => data) est utilisée pour parcourir le fichier JSON.
