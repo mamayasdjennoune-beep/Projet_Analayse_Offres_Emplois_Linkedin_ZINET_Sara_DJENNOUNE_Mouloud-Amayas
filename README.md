@@ -264,20 +264,27 @@ Après chaque chargement, une requête SELECT * est exécutée afin de vérifier
 ### Apperçu des tables du schéma Silver
 #### Table JOB_POSTINGS
 ![job](images/job_posting_bronze1.png)
-#### Table BENEFITS
 
-#### Table COMPANIES
+![job](images/job_posting_bronze2.png)
 
-#### Table EMPLOYEE_COUNTS
+![job](images/job_posting_bronze3.png)
 
-#### Table JOB_SKILLS
+#### Table `BENEFITS`
+![job](images/benefits_bronze.png)
 
-#### Table JOB_INDUSTRIES
+#### Table `COMPANIES`
+![job](images/companies_bronze.png)
 
-#### Table COMPANY_INDUSTRIES
-
-#### Table COMPANY_SPECIALITIES
-
+#### Table `EMPLOYEE_COUNTS`
+![job](images/employee_counts_bronze.png)
+#### Table `JOB_SKILLS`
+![job](images/.png)
+#### Table `JOB_INDUSTRIES`
+![job](images/job_industries_bronze.png)
+#### Table `COMPANY_INDUSTRIES`
+![job](images/cmpanies_industries_bronze.png)
+#### Table `COMPANY_SPECIALITIES`
+![job](images/companies_specialite_bronze.png)
 
 ## II. 5.	Création des tables dans le schéma Silver
 
