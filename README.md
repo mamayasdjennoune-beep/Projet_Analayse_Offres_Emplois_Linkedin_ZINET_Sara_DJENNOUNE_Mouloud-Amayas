@@ -1187,7 +1187,7 @@ Elle permet d’identifier les formes d’emploi dominantes.
 ## II. .8	Application streamlit
 L’application Streamlit constitue la couche finale de valorisation du projet. Elle permet de transformer les résultats issus de la couche Gold en visualisations interactives afin de faciliter l’analyse et l’interprétation du marché de l’emploi.
 L’application s’appuie exclusivement sur les tables analytiques de la base LINKEDIN.GOLD, garantissant ainsi la cohérence entre les transformations effectuées en amont et les analyses présentées à l’utilisateur
-*Le code complet de l'application :
+### * Le code complet de l'application :
 ```python
 import streamlit as st
 import pandas as pd
@@ -1571,50 +1571,58 @@ for i, row in df5.iterrows():
     </div>
     """, unsafe_allow_html=True)
 ```
-* Explication du code:
-### 1. Configuration et initialisation de l’application
+###  Explication du code:
+####   Configuration et initialisation de l’application
 Le paramétrage de l’application est réalisé à l’aide de la fonction st.set_page_config(layout="wide"), permettant un affichage en pleine largeur adapté aux tableaux de bord analytiques.
 Un style CSS personnalisé est injecté via st.markdown afin d’améliorer la lisibilité et l’esthétique générale de l’interface. Les titres et la mise en page sont ainsi homogénéisés pour offrir une expérience utilisateur plus professionnelle.
 
-### 2. Connexion à Snowflake
+####   Connexion à Snowflake
 L’application établit une connexion directe à Snowflake à l’aide de la fonction get_active_session. Cette approche permet d’exécuter des requêtes SQL directement depuis Streamlit, sans duplication des données côté application.
 Toutes les données affichées dans l’application sont donc extraites en temps réel depuis la base de données Snowflake, assurant des analyses toujours à jour.
 
-### 3. Mapping des industries LinkedIn
-Un dictionnaire de correspondance (industry_map) est utilisé afin d’associer les identifiants numériques des industries LinkedIn à leurs libellés métiers officiels. Ce mapping améliore considérablement la lisibilité des résultats pour l’utilisateur.
-La fonction map_industry applique ce mapping aux jeux de données retournés par les requêtes SQL. Une nouvelle colonne industry_name est ainsi ajoutée, permettant d’afficher des noms d’industries explicites plutôt que des codes numériques.
-Cette étape assure une meilleure compréhension métier des analyses présentées dans l’application.
+####  Mapping des industries LinkedIn
+Dans les données analytiques, les secteurs d’activité sont identifiés par des codes numériques (industry_id), ce qui rend leur interprétation directe peu lisible pour l’utilisateur final. Afin d’améliorer la compréhension métier des résultats, un dictionnaire de correspondance (industry_map) est défini directement dans l’application Streamlit.
+Ce mapping permet d’associer les identifiants numériques des industries LinkedIn à leurs libellés officiels. La transformation est appliquée après l’extraction des données depuis Snowflake, au niveau de l’application, à l’aide de la fonction map_industry. Une colonne supplémentaire industry_name est ainsi créée afin d’afficher des noms d’industries explicites dans les filtres et les visualisations.
+Cette approche améliore significativement la lisibilité des graphiques et facilite l’analyse des résultats par secteur d’activité, sans modifier les tables analytiques de la couche Gold.
 
-### 4. Analyse des titres de postes par industrie
+####   Analyse des titres de postes par industrie
 La première visualisation permet d’identifier les 10 titres de postes les plus fréquemment publiés par industrie.
 Les données sont extraites depuis la table LINKEDIN.GOLD.JOB_ANALYTICS à l’aide d’une requête SQL utilisant une fonction analytique ROW_NUMBER.
 Un filtre interactif selectbox permet à l’utilisateur de sélectionner une industrie spécifique. Le graphique en barres généré avec Altair affiche alors les titres de postes les plus représentés dans le secteur choisi.
 Cette analyse met en évidence les profils les plus demandés selon les domaines d’activité.
 
-### 5. Analyse des salaires par industrie
+####  Analyse des salaires par industrie
 Une seconde section de l’application analyse les postes les mieux rémunérés par industrie.
 La requête SQL calcule le salaire maximum moyen à l’aide de la fonction AVG(max_salary).
 Un filtre par industrie est également proposé afin de comparer les rémunérations selon le secteur d’activité. Le graphique permet ainsi d’identifier les postes offrant les salaires les plus élevés dans chaque industrie.
 Cette analyse apporte une vision économique du marché de l’emploi.
 
-### 6. Répartition des offres par taille d’entreprise
+####  Répartition des offres par taille d’entreprise
 L’application présente ensuite la distribution des offres d’emploi en fonction de la taille des entreprises.
 Les données sont regroupées par company_size et visualisées sous forme de graphique linéaire.
 Un message d’insight automatique met en avant la taille d’entreprise générant le plus grand nombre d’opportunités, facilitant l’interprétation des résultats.
 
-### 7. Analyse du recrutement par industrie
+####  Analyse du recrutement par industrie
 Une visualisation avancée de type waffle chart est utilisée pour représenter la répartition des recrutements par industrie.
 Chaque carré représente une proportion du volume total d’offres, offrant une lecture rapide et visuelle de l’activité de recrutement par secteur.
 Cette représentation met en évidence les industries dominantes du marché de l’emploi LinkedIn.
 
-### 8. Répartition des types de contrats
+####  Répartition des types de contrats
 L’application analyse également la répartition des types de contrats proposés sur le marché, tels que les contrats à temps plein, à temps partiel ou les stages.
 Les résultats sont affichés sous forme de graphique en barres, complété par des cartes KPI colorées indiquant le nombre total d’offres pour chaque type de contrat.
 Cette section permet d’identifier les formes d’emploi les plus répandues.
 
-### 9. Apport global de l’application Streamlit
+#### 9. Apport global de l’application Streamlit
 L’application Streamlit complète efficacement les traitements réalisés dans Snowflake en offrant une interface interactive et visuelle. Elle permet une exploration dynamique des données et rend les analyses accessibles à un public non technique.
 L’ensemble des visualisations repose sur des requêtes SQL cohérentes avec celles décrites dans le rapport, assurant une continuité entre la phase de transformation des données et leur exploitation analytique.
+
+### Aperçu de l'application :
+![job](images/.png)
+![job](images/.png)
+![job](images/.png)
+![job](images/.png)
+![job](images/.png)
+
 
 # III.	Difficultés et solutions apportées
 
@@ -1647,7 +1655,7 @@ De plus, les champs temporels représentant des dates et des heures sont exprim�
 * Solution apportée :
 Ces problèmes ont été résolus dans la couche Silver par la mise en place de conversions robustes à l’aide des fonctions TRY_TO_NUMBER, TRY_TO_BOOLEAN et TO_TIMESTAMP_NTZ, associées à des conditions permettant de distinguer automatiquement les formats de timestamps. Cette approche garantit un typage cohérent des données tout en évitant les erreurs liées aux valeurs invalides ou manquantes.
 
-6. Complexité de consolidation des données analytiques
+## III. 6. Complexité de consolidation des données analytiques
 La construction de la table JOB_ANALYTICS a nécessité la combinaison de plusieurs tables Gold issues de sources différentes. Les identifiants n’étaient pas toujours directement compatibles, en particulier pour les entreprises.
 Solution apportée :
 Une logique de jointure adaptée a été mise en place, notamment via la conversion explicite des identifiants et l’utilisation de jointures externes (LEFT JOIN) afin de conserver un maximum d’informations analytiques tout en évitant la perte de données.
