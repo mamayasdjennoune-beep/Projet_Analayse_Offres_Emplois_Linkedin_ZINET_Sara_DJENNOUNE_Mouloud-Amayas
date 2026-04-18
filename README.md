@@ -564,134 +564,134 @@ select* from LINKEDIN.SILVER.COMPANY_SPECIALITIES;
 ```
 #### Schéma `Silver`
 La création du schéma `Silver` suis le même logique que le schéma `Bronze, il a pour rôle de nettoyer, typer et normaliser les données issues de la couche Bronze en appliquant des règles de qualité et de cohérence, afin de préparer des données fiables et structurées pour l’analyse.
-#### Table JOB_POSTINGS
+#### Table `JOB_POSTINGS`
 
-La table JOB_POSTINGS est créée dans la couche Silver avec l’instruction CREATE OR REPLACE TABLE.
-Les données proviennent directement de la table LINKEDIN.BRONZE.JOB_POSTINGS via la clause FROM.
-L’identifiant de l’offre est converti en numérique avec job_id::BIGINT, ce qui permet une exploitation cohérente dans les jointures et les analyses.
-Les champs texte sont nettoyés grâce à l’utilisation combinée de TRIM() et NULLIF(..., ''), ce qui permet de supprimer les espaces inutiles et de convertir les chaînes vides en valeurs nulles.
-Le titre du poste est également nettoyé avec NULLIF(TRIM(title), '').
-Les salaires minimum, médian et maximum sont convertis en nombres avec TRY_TO_NUMBER(max_salary), TRY_TO_NUMBER(med_salary) et TRY_TO_NUMBER(min_salary).
-La fonction TRY_TO_NUMBER permet d’éviter toute erreur de conversion lorsque les données sources sont incorrectes ou manquantes.
-La période de paiement est normalisée à l’aide d’un CASE WHEN sur pay_period.
-Les valeurs françaises et anglaises sont regroupées sous des formats standards comme yearly, monthly, weekly, daily ou hourly.
-Le type de contrat est harmonisé avec un CASE WHEN appliqué à formatted_work_type.
-Le champ work_type est normalisé selon la même logique afin d’assurer la cohérence des catégories d’emploi.
-La localisation est nettoyée avec NULLIF(TRIM(location), '').
-Le nombre de candidatures est converti en valeur numérique avec TRY_TO_NUMBER(applies).
-Le nombre de vues est converti avec TRY_TO_NUMBER(views).
-Les champs temporels (original_listed_time, listed_time, expiry, closed_time) sont transformés en timestamps à l’aide de TO_TIMESTAMP_NTZ.
-Une condition CASE WHEN permet de distinguer les valeurs exprimées en secondes de celles exprimées en millisecondes.
-Le champ remote_allowed est converti en booléen avec TRY_TO_BOOLEAN.
-Les représentations numériques et textuelles sont également prises en compte dans la logique conditionnelle.
-Le champ sponsored est normalisé selon la même logique booléenne robuste.
-Le niveau d’expérience est standardisé grâce à un CASE WHEN appliqué à formatted_experience_level.
-Les colonnes skills_desc, currency et compensation_type sont conservées sans transformation.
-La table Silver est ainsi entièrement reconstruite à partir de la table Bronze.
-Une déduplication explicite est appliquée à l’aide de ROW_NUMBER() combiné à QUALIFY, afin de conserver uniquement la version la plus récente de chaque offre par job_id.
-La requête SELECT * FROM LINKEDIN.SILVER.JOB_POSTINGS permet de vérifier le résultat final.
+- La table JOB_POSTINGS est créée dans la couche Silver avec l’instruction CREATE OR REPLACE TABLE.
+- Les données proviennent directement de la table LINKEDIN.BRONZE.JOB_POSTINGS via la clause FROM.
+- L’identifiant de l’offre est converti en numérique avec job_id::BIGINT, ce qui permet une exploitation cohérente dans les jointures et les analyses.
+- Les champs texte sont nettoyés grâce à l’utilisation combinée de TRIM() et NULLIF(..., ''), ce qui permet de supprimer - - les espaces inutiles et de convertir les chaînes vides en valeurs nulles.
+- Le titre du poste est également nettoyé avec NULLIF(TRIM(title), '').
+- Les salaires minimum, médian et maximum sont convertis en nombres avec TRY_TO_NUMBER(max_salary), TRY_TO_NUMBER(med_salary) et TRY_TO_NUMBER(min_salary).
+- La fonction TRY_TO_NUMBER permet d’éviter toute erreur de conversion lorsque les données sources sont incorrectes ou manquantes.
+- La période de paiement est normalisée à l’aide d’un CASE WHEN sur pay_period.
+- Les valeurs françaises et anglaises sont regroupées sous des formats standards comme yearly, monthly, weekly, daily ou hourly.
+- Le type de contrat est harmonisé avec un CASE WHEN appliqué à formatted_work_type.
+- Le champ work_type est normalisé selon la même logique afin d’assurer la cohérence des catégories d’emploi.
+- La localisation est nettoyée avec NULLIF(TRIM(location), '').
+- Le nombre de candidatures est converti en valeur numérique avec TRY_TO_NUMBER(applies).
+- Le nombre de vues est converti avec TRY_TO_NUMBER(views).
+- Les champs temporels (original_listed_time, listed_time, expiry, closed_time) sont transformés en timestamps à l’aide de TO_TIMESTAMP_NTZ.
+- Une condition CASE WHEN permet de distinguer les valeurs exprimées en secondes de celles exprimées en millisecondes.
+- Le champ remote_allowed est converti en booléen avec TRY_TO_BOOLEAN.
+- Les représentations numériques et textuelles sont également prises en compte dans la logique conditionnelle.
+- Le champ sponsored est normalisé selon la même logique booléenne robuste.
+- Le niveau d’expérience est standardisé grâce à un CASE WHEN appliqué à formatted_experience_level.
+- Les colonnes skills_desc, currency et compensation_type sont conservées sans transformation.
+- La table Silver est ainsi entièrement reconstruite à partir de la table Bronze.
+- Une déduplication explicite est appliquée à l’aide de ROW_NUMBER() combiné à QUALIFY, afin de conserver uniquement la version la plus récente de chaque offre par job_id.
+- La requête SELECT * FROM LINKEDIN.SILVER.JOB_POSTINGS permet de vérifier le résultat final.
 
 
 #### Table BENEFITS
 
-La table BENEFITS est créée dans la couche Silver avec CREATE OR REPLACE TABLE.
-Elle est construite à partir de la table LINKEDIN.BRONZE.BENEFITS via la clause FROM.
-L’identifiant de l’offre est converti en numérique avec job_id::BIGINT.
-Cette conversion permet d’utiliser job_id comme clé de jointure fiable.
-Le champ inferred est normalisé à l’aide d’un CASE WHEN.
-La fonction LOWER(TRIM(inferred)) permet d’unifier les différentes représentations textuelles.
-Les valeurs telles que 'true', '1', 'yes', 'vrai' et 'oui' sont converties en TRUE.
-Les valeurs 'false', '0', 'no', 'faux' et 'non' sont converties en FALSE.
-Les valeurs non reconnues sont remplacées par NULL.
-Cette logique permet de gérer les formats français et anglais.
-Le champ type est nettoyé avec TRIM(type).
-La fonction NULLIF(..., '') transforme les chaînes vides en valeurs nulles.
-Aucune traduction automatique n’est appliquée au champ type.
-Les données sont ainsi standardisées sans perte d’information.
-Une déduplication explicite est appliquée sur la clé métier (job_id, type) après normalisation avec LOWER(TRIM(type)).
-Cette déduplication garantit une seule occurrence par couple (job_id, type).
-La requête SELECT * FROM LINKEDIN.SILVER.BENEFITS permet de vérifier le résultat final.
+- La table BENEFITS est créée dans la couche Silver avec CREATE OR REPLACE TABLE.
+- Elle est construite à partir de la table LINKEDIN.BRONZE.BENEFITS via la clause FROM.
+- L’identifiant de l’offre est converti en numérique avec job_id::BIGINT.
+- Cette conversion permet d’utiliser job_id comme clé de jointure fiable.
+- Le champ inferred est normalisé à l’aide d’un CASE WHEN.
+- La fonction LOWER(TRIM(inferred)) permet d’unifier les différentes représentations textuelles.
+- Les valeurs telles que 'true', '1', 'yes', 'vrai' et 'oui' sont converties en TRUE.
+- Les valeurs 'false', '0', 'no', 'faux' et 'non' sont converties en FALSE.
+- Les valeurs non reconnues sont remplacées par NULL.
+- Cette logique permet de gérer les formats français et anglais.
+- Le champ type est nettoyé avec TRIM(type).
+- La fonction NULLIF(..., '') transforme les chaînes vides en valeurs nulles.
+- Aucune traduction automatique n’est appliquée au champ type.
+- Les données sont ainsi standardisées sans perte d’information.
+- Une déduplication explicite est appliquée sur la clé métier (job_id, type) après normalisation avec LOWER(TRIM(type)).
+- Cette déduplication garantit une seule occurrence par couple (job_id, type).
+- La requête SELECT * FROM LINKEDIN.SILVER.BENEFITS permet de vérifier le résultat final.
 
 
 #### Table COMPANIES
 
-La table COMPANIES est créée dans la couche Silver avec CREATE OR REPLACE TABLE.
-Les données proviennent de la table LINKEDIN.BRONZE.COMPANIES.
-La fonction LATERAL FLATTEN(input => data) est utilisée pour déstructurer le fichier JSON.
-Chaque objet JSON est transformé en une ligne relationnelle.
-L’identifiant de l’entreprise est extrait avec f.value:company_id::BIGINT.
-Ce champ devient la clé principale logique de la table.
-Le nom de l’entreprise est nettoyé avec TRIM et NULLIF.
-Les chaînes vides sont explicitement converties en valeurs nulles.
-La description est extraite avec f.value:description::STRING.
-La taille de l’entreprise est convertie en entier avec company_size::INT.
-Les champs state, country, city, zip_code, address et url sont nettoyés avec TRIM et NULLIF.
-Toutes les colonnes sont typées lors de l’extraction.
-Aucune transformation métier complexe n’est appliquée à ce stade.
-Cette table permet de structurer les données semi‑structurées.
-Elle prépare les données pour les jointures analytiques futures.
+- La table COMPANIES est créée dans la couche Silver avec CREATE OR REPLACE TABLE.
+- Les données proviennent de la table LINKEDIN.BRONZE.COMPANIES.
+- La fonction LATERAL FLATTEN(input => data) est utilisée pour déstructurer le fichier JSON.
+- Chaque objet JSON est transformé en une ligne relationnelle.
+- L’identifiant de l’entreprise est extrait avec f.value:company_id::BIGINT.
+- Ce champ devient la clé principale logique de la table.
+- Le nom de l’entreprise est nettoyé avec TRIM et NULLIF.
+- Les chaînes vides sont explicitement converties en valeurs nulles.
+- La description est extraite avec f.value:description::STRING.
+- La taille de l’entreprise est convertie en entier avec company_size::INT.
+- Les champs state, country, city, zip_code, address et url sont nettoyés avec TRIM et NULLIF.
+- Toutes les colonnes sont typées lors de l’extraction.
+- Aucune transformation métier complexe n’est appliquée à ce stade.
+- Cette table permet de structurer les données semi‑structurées.
+- Elle prépare les données pour les jointures analytiques futures.
 
 
 #### Table EMPLOYEE_COUNTS
 
-La table EMPLOYEE_COUNTS est créée dans la couche Silver avec CREATE OR REPLACE TABLE.
-Les données proviennent de la table LINKEDIN.BRONZE.EMPLOYEE_COUNTS.
-L’identifiant de l’entreprise est converti en numérique avec TRY_TO_NUMBER(company_id).
-Cette conversion permet d’utiliser company_id pour les jointures.
-Le champ employee_count est nettoyé avec TRIM et NULLIF.
-Il est converti en nombre avec TRY_TO_NUMBER.
-Le champ follower_count suit la même logique de conversion.
-La fonction TRY_TO_NUMBER évite les erreurs de typage.
-Le champ time_recorded est converti en timestamp avec TO_TIMESTAMP_NTZ.
-Une condition CASE WHEN gère les formats en secondes et en millisecondes.
-Le seuil > 100000000000 permet d’identifier les millisecondes.
-Les valeurs nulles sont explicitement gérées.
-Une déduplication est appliquée afin de conserver uniquement l’enregistrement le plus récent par entreprise (company_id).
+- La table EMPLOYEE_COUNTS est créée dans la couche Silver avec CREATE OR REPLACE TABLE.
+- Les données proviennent de la table LINKEDIN.BRONZE.EMPLOYEE_COUNTS.
+- L’identifiant de l’entreprise est converti en numérique avec TRY_TO_NUMBER(company_id).
+- Cette conversion permet d’utiliser company_id pour les jointures.
+- Le champ employee_count est nettoyé avec TRIM et NULLIF.
+- Il est converti en nombre avec TRY_TO_NUMBER.
+- Le champ follower_count suit la même logique de conversion.
+- La fonction TRY_TO_NUMBER évite les erreurs de typage.
+- Le champ time_recorded est converti en timestamp avec TO_TIMESTAMP_NTZ.
+- Une condition CASE WHEN gère les formats en secondes et en millisecondes.
+- Le seuil > 100000000000 permet d’identifier les millisecondes.
+- Les valeurs nulles sont explicitement gérées.
+- Une déduplication est appliquée afin de conserver uniquement l’enregistrement le plus récent par entreprise (company_id).
 
 
 #### Table JOB_SKILLS
 
-La table JOB_SKILLS est créée à partir de la couche Bronze.
-L’identifiant de l’offre est converti en numérique avec TRY_TO_NUMBER(job_id).
-Le champ skill_abr est nettoyé avec TRIM et normalisé en majuscules à l’aide de UPPER.
-La fonction NULLIF permet de convertir les compétences vides en valeurs nulles.
-Une déduplication explicite est appliquée sur la clé métier (job_id, skill_abr).
-Cette approche garantit une seule occurrence de chaque compétence par offre.
+- La table JOB_SKILLS est créée à partir de la couche Bronze.
+- L’identifiant de l’offre est converti en numérique avec TRY_TO_NUMBER(job_id).
+- Le champ skill_abr est nettoyé avec TRIM et normalisé en majuscules à l’aide de UPPER.
+- La fonction NULLIF permet de convertir les compétences vides en valeurs nulles.
+- Une déduplication explicite est appliquée sur la clé métier (job_id, skill_abr).
+- Cette approche garantit une seule occurrence de chaque compétence par offre.
 
 
 #### Table JOB_INDUSTRIES
 
-La table JOB_INDUSTRIES est créée dans la couche Silver avec CREATE OR REPLACE TABLE.
-Les données proviennent de la table LINKEDIN.BRONZE.JOB_INDUSTRIES.
-La fonction LATERAL FLATTEN(input => data) est utilisée pour parcourir le fichier JSON.
-Chaque élément du tableau JSON est transformé en une ligne.
-L’identifiant de l’offre est extrait avec f.value:job_id::BIGINT.
-L’identifiant du secteur est extrait avec f.value:industry_id::INT.
-Les valeurs sont explicitement protégées avec NULLIF.
-Une déduplication explicite est appliquée sur la clé (job_id, industry_id) à l’aide de ROW_NUMBER().
+- La table JOB_INDUSTRIES est créée dans la couche Silver avec CREATE OR REPLACE TABLE.
+- Les données proviennent de la table LINKEDIN.BRONZE.JOB_INDUSTRIES.
+- La fonction LATERAL FLATTEN(input => data) est utilisée pour parcourir le fichier JSON.
+- Chaque élément du tableau JSON est transformé en une ligne.
+- L’identifiant de l’offre est extrait avec f.value:job_id::BIGINT.
+- L’identifiant du secteur est extrait avec f.value:industry_id::INT.
+- Les valeurs sont explicitement protégées avec NULLIF.
+- Une déduplication explicite est appliquée sur la clé (job_id, industry_id) à l’aide de ROW_NUMBER().
 
 
 #### Table COMPANY_INDUSTRIES
 
-La table COMPANY_INDUSTRIES est créée dans la couche Silver avec CREATE OR REPLACE TABLE.
-Les données proviennent de LINKEDIN.BRONZE.COMPANY_INDUSTRIES.
-La fonction LATERAL FLATTEN est utilisée pour parcourir le JSON.
-L’identifiant de l’entreprise est extrait avec f.value:company_id::BIGINT.
-Le champ industry est nettoyé avec LOWER(TRIM(...)).
-La fonction NULLIF permet de convertir les valeurs vides en NULL.
-Une déduplication explicite est appliquée sur la clé métier (company_id, industry).
+- La table COMPANY_INDUSTRIES est créée dans la couche Silver avec CREATE OR REPLACE TABLE.
+- Les données proviennent de LINKEDIN.BRONZE.COMPANY_INDUSTRIES.
+- La fonction LATERAL FLATTEN est utilisée pour parcourir le JSON.
+- L’identifiant de l’entreprise est extrait avec f.value:company_id::BIGINT.
+- Le champ industry est nettoyé avec LOWER(TRIM(...)).
+- La fonction NULLIF permet de convertir les valeurs vides en NULL.
+- Une déduplication explicite est appliquée sur la clé métier (company_id, industry).
 
 
 #### Table COMPANY_SPECIALITIES
 
-La table COMPANY_SPECIALITIES est créée dans la couche Silver avec CREATE OR REPLACE TABLE.
-Les données proviennent de la table LINKEDIN.BRONZE.COMPANY_SPECIALITIES.
-La fonction LATERAL FLATTEN est utilisée pour extraire les données JSON.
-L’identifiant de l’entreprise est converti en numérique.
-Le champ speciality est nettoyé avec LOWER(TRIM(...)) et NULLIF.
-Aucune traduction automatique n’est appliquée aux spécialités.
-Une déduplication explicite est appliquée sur (company_id, speciality).
-La table est prête à être utilisée dans la couche Gold.
+- La table COMPANY_SPECIALITIES est créée dans la couche Silver avec CREATE OR REPLACE TABLE.
+- Les données proviennent de la table LINKEDIN.BRONZE.COMPANY_SPECIALITIES.
+- La fonction LATERAL FLATTEN est utilisée pour extraire les données JSON.
+- L’identifiant de l’entreprise est converti en numérique.
+- Le champ speciality est nettoyé avec LOWER(TRIM(...)) et NULLIF.
+- Aucune traduction automatique n’est appliquée aux spécialités.
+- Une déduplication explicite est appliquée sur (company_id, speciality).
+- La table est prête à être utilisée dans la couche Gold.
 
 ## II. 6. 	Création des tables dans le schéma Gold
 ### Code
