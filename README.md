@@ -855,7 +855,7 @@ SELECT * FROM LINKEDIN.GOLD.JOB_ANALYTICS;
 - Elle est exploitée par l’application Streamlit.
 - La requête SELECT * FROM LINKEDIN.GOLD.JOB_INDUSTRIES permet de vérifier le contenu.
   
- ### Table `JOB_SKILLS`
+ #### Table `JOB_SKILLS`
 
 - La table JOB_SKILLS est créée dans la couche Gold avec CREATE OR REPLACE TABLE.
 - Les données proviennent de la table LINKEDIN.SILVER.JOB_SKILLS.
@@ -869,7 +869,7 @@ SELECT * FROM LINKEDIN.GOLD.JOB_ANALYTICS;
 - Elle est utilisée dans les analyses finales et les tableaux de bord.
 - La requête SELECT * FROM LINKEDIN.GOLD.JOB_SKILLS permet de vérifier le contenu.
   
-### Table `COMPANY_PROFILE`
+#### Table `COMPANY_PROFILE`
 
 - La table COMPANY_PROFILE est créée dans la couche Gold avec CREATE OR REPLACE TABLE.
 - Les données proviennent de la table LINKEDIN.SILVER.COMPANIES, référencée par l’alias c.
@@ -888,7 +888,7 @@ SELECT * FROM LINKEDIN.GOLD.JOB_ANALYTICS;
 - Elle est utilisée dans les jointures avec les offres d’emploi.
 - La requête SELECT * FROM LINKEDIN.GOLD.COMPANY_PROFILE permet de vérifier le contenu final.
 
-### Table `JOB_ANALYTICS`
+#### Table `JOB_ANALYTICS`
 
 - La table JOB_ANALYTICS est créée dans la couche Gold avec CREATE OR REPLACE TABLE.
 - Elle constitue la table analytique centrale du projet.
