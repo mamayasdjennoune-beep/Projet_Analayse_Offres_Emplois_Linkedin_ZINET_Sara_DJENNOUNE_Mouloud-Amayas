@@ -260,7 +260,7 @@ Ce choix permet :
 La commande COPY INTO est également utilisée pour charger les fichiers JSON, en précisant simplement un format différent.La logique de chargement reste identique à celle des CSV, la seule différence réside dans le format spécifié (JSON au lieu de CSV).
 
 Après chaque chargement, une requête SELECT * est exécutée afin de vérifier immédiatement le contenu de la table BRONZE et s’assurer que les données ont été correctement ingérées
-### Apperçu des tables du schéma `Bronze`
+### Aperçu des tables du schéma `Bronze`
 #### Table `LINKEDIN.BRONZE.JOB_POSTINGS`
 ![job](images/job_posting_bronze1.png)
 
@@ -602,6 +602,7 @@ WHERE rn = 1;
 select* from LINKEDIN.SILVER.COMPANY_SPECIALITIES;
 
 ```
+### Explications
 #### Schéma `Silver`
 La création du schéma `Silver` suis le même logique que le schéma `Bronze, il a pour rôle de nettoyer, typer et normaliser les données issues de la couche Bronze en appliquant des règles de qualité et de cohérence, afin de préparer des données fiables et structurées pour l’analyse.
 #### Table `LINKEDIN.SILVER.JOB_POSTINGS`
@@ -732,7 +733,7 @@ La création du schéma `Silver` suis le même logique que le schéma `Bronze, i
 - Aucune traduction automatique n’est appliquée aux spécialités.
 - Une déduplication explicite est appliquée sur (company_id, speciality).
 - La table est prête à être utilisée dans la couche Gold.
-### Apperçu des tables du schéma `Silver`
+### Aperçu des tables du schéma `Silver`
 #### Table `LINKEDIN.SILVER.JOB_POSTINGS`
 ![job](images/job_posting_silver1.png)
 ![job](images/job_posting_silver2.png)
@@ -896,6 +897,7 @@ LEFT JOIN LINKEDIN.GOLD.COMPANY_PROFILE cp
 SELECT * FROM LINKEDIN.GOLD.JOB_ANALYTICS;
 
 ```
+## Explications
 #### Schéma `Gold`
  La création du schéma `Gold` suis la même logique que les schémas `Bronze` et `Silver`, il a pour rôle de consolider et d’enrichir les données nettoyées afin de produire des tables analytiques optimisées, directement exploitables pour les analyses métier et les outils de visualisation.
 #### Table `LINKEDIN.GOLD.JOB_POSTING`
@@ -989,7 +991,7 @@ SELECT * FROM LINKEDIN.GOLD.JOB_ANALYTICS;
 - Elle est utilisée par les requêtes analytiques finales.
 - Elle sert de source principale pour l’application Streamlit.
 - La requête SELECT * FROM LINKEDIN.GOLD.JOB_ANALYTICS permet de vérifier le contenu.
-- ### Apperçu des tables du schéma `Gold`
+- ### Aperçu des tables du schéma `Gold`
 #### Table `JOB_POSTINGS`
 ![job](images/job_posting_gold1.png)
 ![job](images/job_posting_gold2.png)
@@ -1036,6 +1038,7 @@ La fonction COUNT(industry_id) ignore les valeurs nulles.
 
 Elle permet d’évaluer la couverture des données par secteur.  
 * Apeçu du résultat de la requête :
+  
   ![job](images/R1.png)
   
 #### Comptage des entreprises avec taille connue
@@ -1049,6 +1052,7 @@ Elle compte les offres liées à une entreprise avec une taille renseignée.
 
 La comparaison permet d’identifier les données manquantes.  
 * Apeçu du résultat de la requête :
+  
 ![job](images/R2.png)
 ####  Top 10 des titres de poste par industrie
 ```sql
@@ -1070,6 +1074,7 @@ La fenêtre ROW_NUMBER() classe les titres par industrie.
 
 La clause QUALIFY limite le résultat aux 10 premiers titres.
 * Apeçu du résultat de la requête :
+  
   ![job](images/R3.png)
 
 #### Top 10 des postes les mieux payés par industrie
@@ -1093,6 +1098,7 @@ Le classement est effectué par industrie avec ROW_NUMBER().
 
 Seuls les 10 postes les mieux rémunérés par secteur sont conservés.
 * Apeçu du résultat de la requête :
+  
 ![job](images/R4.png)
 #### Répartition des offres par taille d’entreprise
 ```sql
@@ -1112,6 +1118,7 @@ La fonction COUNT(*) mesure le volume d’offres par catégorie.
 
 Le tri facilite la lecture des résultats. 
 * Apeçu du résultat de la requête :
+  
 ![job](images/R5.png)
 #### Distribution réelle des entreprises par taille
 ```sql
@@ -1129,6 +1136,7 @@ Elle s’appuie sur la table COMPANY_PROFILE.
 
 Elle permet de comparer offres publiées et structure du marché.
 * Apeçu du résultat de la requête :
+  
 ![job](images/R6.png)
 #### Répartition des offres par industrie
 ```sql
@@ -1148,6 +1156,7 @@ Le tri décroissant met en évidence les secteurs dominants.
 
 La clause LIMIT 30 restreint l’analyse aux principaux secteurs.
 * Apeçu du résultat de la requête :
+  
 ![job](images/R7.png)
 #### Répartition des offres par type de contrat
 ```sql
@@ -1165,6 +1174,7 @@ Le regroupement est effectué sur formatted_work_type.
 
 Elle permet d’identifier les formes d’emploi dominantes.
 * Apeçu du résultat de la requête :
+  
 ![job](images/R8.png)
 #### Top 10 des compétences les plus demandées
 ```sql
@@ -1182,6 +1192,7 @@ Le regroupement est effectué sur formatted_work_type.
 
 Elle permet d’identifier les formes d’emploi dominantes.
 * Apeçu du résultat de la requête :
+  
 ![job](images/R9.png)
 
 ## II. .8	Application streamlit
