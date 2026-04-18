@@ -1,4 +1,4 @@
--- Travail effectué par :  ZINET Sara, DJENNOUNE Mouloud-Amayas
+-- Travail réalisé par :  ZINET Sara, DJENNOUNE Mouloud-Amayas
 
 -- Create Database
 CREATE DATABASE IF NOT EXISTS LINKEDIN;
