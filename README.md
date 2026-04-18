@@ -1,4 +1,4 @@
-
+<img width="743" height="367" alt="image" src="https://github.com/user-attachments/assets/94b3afa4-d9c5-4851-b6e2-7f5240ee3527" />
 # I. Introduction 
 ## I. 1. Contexte
 Avec l’essor des plateformes professionnelles comme LinkedIn, une grande quantité de données est générée quotidiennement autour du marché de l’emploi : offres d’emploi, compétences demandées, secteurs d’activité, types de contrats, salaires, etc.
@@ -971,7 +971,7 @@ SELECT * FROM LINKEDIN.GOLD.JOB_ANALYTICS;
 
 ## II. 7.	Requêtes d’analyse de données 
 Après la construction des tables de la couche `Gold`, des requêtes d’analyse sont mises en place afin d’explorer et d’interpréter les données du marché de l’emploi. Ces requêtes permettent d’identifier les tendances clés liées aux offres d’emploi, aux secteurs d’activité, aux salaires et aux compétences demandées.
-* Comptage global des offres et des industries
+#### Comptage global des offres et des industries
 ```sql
 	--Comptage global des données
 SELECT COUNT(*) AS total, COUNT(industry_id) AS non_null_industry
@@ -984,8 +984,10 @@ Elle compte également le nombre d’offres associées à une industrie.
 La fonction COUNT(industry_id) ignore les valeurs nulles.  
 
 Elle permet d’évaluer la couverture des données par secteur.  
-
-* Comptage des entreprises avec taille connue
+* Apeçu du résultat de la requête :
+  ![job](images/R1.png)
+  
+#### Comptage des entreprises avec taille connue
 ```sql
 	SELECT COUNT(*) AS total, COUNT(company_size) AS non_null_company_size
 FROM LINKEDIN.GOLD.JOB_ANALYTICS;
@@ -995,8 +997,9 @@ Cette requête compte le nombre total d’enregistrements analytiques.
 Elle compte les offres liées à une entreprise avec une taille renseignée.  
 
 La comparaison permet d’identifier les données manquantes.  
-
-*  Top 10 des titres de poste par industrie
+* Apeçu du résultat de la requête :
+![job](images/R2.png)
+####  Top 10 des titres de poste par industrie
 ```sql
 	--Top 10 des titres par industrie
 SELECT industry_id, title, COUNT(*) AS nb_job_postings
@@ -1014,9 +1017,11 @@ La fonction COUNT(*) calcule le nombre d’offres par titre.
 
 La fenêtre ROW_NUMBER() classe les titres par industrie.  
 
-La clause QUALIFY limite le résultat aux 10 premiers titres.  
+La clause QUALIFY limite le résultat aux 10 premiers titres.
+* Apeçu du résultat de la requête :
+  ![job](images/R3.png)
 
-* Top 10 des postes les mieux payés par industrie
+#### Top 10 des postes les mieux payés par industrie
 ```sql
 	--Top 10 des titres les mieux payés par industrie
 SELECT industry_id, title, ROUND(AVG(max_salary), 0) AS avg_max_salary
@@ -1035,9 +1040,10 @@ La fonction ROUND arrondit les valeurs pour une meilleure lisibilité.
 
 Le classement est effectué par industrie avec ROW_NUMBER().  
 
-Seuls les 10 postes les mieux rémunérés par secteur sont conservés.  
-
-* Répartition des offres par taille d’entreprise
+Seuls les 10 postes les mieux rémunérés par secteur sont conservés.
+* Apeçu du résultat de la requête :
+![job](images/R4.png)
+#### Répartition des offres par taille d’entreprise
 ```sql
 	--Répartition des offres par taille d’entreprise
 SELECT company_size, COUNT(*) AS nb_job_postings
@@ -1053,9 +1059,10 @@ Le regroupement est effectué sur company_size.
 
 La fonction COUNT(*) mesure le volume d’offres par catégorie.  
 
-Le tri facilite la lecture des résultats.  
-
-* Distribution réelle des entreprises par taille
+Le tri facilite la lecture des résultats. 
+* Apeçu du résultat de la requête :
+![job](images/R5.png)
+#### Distribution réelle des entreprises par taille
 ```sql
 	--on compare avec la distribution réelle des entreprises
 SELECT company_size, COUNT(*) AS nb_companies
@@ -1069,9 +1076,10 @@ Cette requête analyse la distribution réelle des entreprises.
 
 Elle s’appuie sur la table COMPANY_PROFILE.  
 
-Elle permet de comparer offres publiées et structure du marché.  
-
-* Répartition des offres par industrie
+Elle permet de comparer offres publiées et structure du marché.
+* Apeçu du résultat de la requête :
+![job](images/R6.png)
+#### Répartition des offres par industrie
 ```sql
 	--Répartition des offres par industrie
 SELECT industry_id, COUNT(*) AS nb_job_postings
@@ -1087,9 +1095,10 @@ Le nombre d’offres est calculé avec COUNT(*).
 
 Le tri décroissant met en évidence les secteurs dominants.  
 
-La clause LIMIT 30 restreint l’analyse aux principaux secteurs.  
-
-* Répartition des offres par type de contrat
+La clause LIMIT 30 restreint l’analyse aux principaux secteurs.
+* Apeçu du résultat de la requête :
+![job](images/R7.png)
+#### Répartition des offres par type de contrat
 ```sql
 	--Répartition des offres par type de contrat
 SELECT formatted_work_type, COUNT(*) AS nb_job_postings
@@ -1103,9 +1112,10 @@ Cette requête analyse les types de contrats proposés.
  
 Le regroupement est effectué sur formatted_work_type.  
 
-Elle permet d’identifier les formes d’emploi dominantes.  
-
-* Top 10 des compétences les plus demandées
+Elle permet d’identifier les formes d’emploi dominantes.
+* Apeçu du résultat de la requête :
+![job](images/R8.png)
+#### Top 10 des compétences les plus demandées
 ```sql
   --Top 10 des compétences les plus demandées
 SELECT skill_abr, COUNT(DISTINCT job_id) AS nb_job_postings
@@ -1119,7 +1129,9 @@ Cette requête analyse les types de contrats proposés.
 
 Le regroupement est effectué sur formatted_work_type.  
 
-Elle permet d’identifier les formes d’emploi dominantes.  
+Elle permet d’identifier les formes d’emploi dominantes.
+* Apeçu du résultat de la requête :
+![job](images/R9.png)
 
 ## II. .8	Application streamlit
 L’application Streamlit constitue la couche finale de valorisation du projet. Elle permet de transformer les résultats issus de la couche Gold en visualisations interactives afin de faciliter l’analyse et l’interprétation du marché de l’emploi.
