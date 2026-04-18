@@ -263,7 +263,7 @@ La commande COPY INTO est également utilisée pour charger les fichiers JSON, e
 Après chaque chargement, une requête SELECT * est exécutée afin de vérifier immédiatement le contenu de la table BRONZE et s’assurer que les données ont été correctement ingérées
 ### Apperçu des tables du schéma Silver
 #### Table JOB_POSTINGS
-images/job_posting_bronze1.png
+![job](images/job_posting_bronze1.png)
 #### Table BENEFITS
 
 #### Table COMPANIES
